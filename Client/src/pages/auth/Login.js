@@ -8,7 +8,7 @@ const Login = () => {
   return (
     <>
       <Stack spacing={3} sx={{ my: 4, position: "releative" }}>
-        <Typography variant="h5">Login to something</Typography>
+        <Typography variant="h5">Login to Pingsphere</Typography>
         <Stack direction={"row"} spacing={1}>
           <Typography variant="body2">New User..?</Typography>
           <Link to="/auth/signup" component={RouterLink} variant="subtitle2">

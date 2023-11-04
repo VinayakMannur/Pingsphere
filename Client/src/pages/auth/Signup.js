@@ -8,7 +8,7 @@ const Signup = () => {
   return (
     <>
       <Stack spacing={3} sx={{ my: 4, position: "releative" }}>
-        <Typography variant="h5">Get started with something</Typography>
+        <Typography variant="h5">Get started with Pingsphere</Typography>
       </Stack>
       <Stack direction={"row"} spacing={1}>
         <Typography variant="body2">Already Registered..?</Typography>

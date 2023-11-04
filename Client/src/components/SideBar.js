@@ -17,6 +17,8 @@ import { Gear } from "phosphor-react";
 import MaterialUISwitch from "./MaterialUISwitch";
 import { useNavigate } from "react-router-dom";
 import useResponsive from "../hooks/useResponsive";
+import { LogoutUser } from "../redux/slices/auth";
+import { useDispatch } from "react-redux";
 
 const getPath = (index) => {
   switch (index) {
@@ -45,6 +47,8 @@ const getMenuPath = (index) => {
 };
 
 const SideBar = () => {
+  const dispatch = useDispatch();
+
   const [selected, setSelected] = useState(0);
 
   const { onToggleMode } = useSettings();
@@ -53,7 +57,7 @@ const SideBar = () => {
 
   const navigate = useNavigate();
 
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
   const handleClick = (event) => {
@@ -65,7 +69,7 @@ const SideBar = () => {
   };
 
   const theme = useTheme();
-  console.log(theme);
+  // console.log(theme);
 
   return (
     <Box
@@ -77,7 +81,7 @@ const SideBar = () => {
             : theme.palette.background.paper,
         boxShadow: "0px 0px 2px rgba(0, 0, 0, 0.5)",
         height: "100vh",
-        width: isMobile ? 65: 90,
+        width: isMobile ? 65 : 90,
       }}
     >
       <Stack
@@ -220,7 +224,11 @@ const SideBar = () => {
                 >
                   <Stack
                     onClick={() => {
-                      navigate(getMenuPath(idx));
+                      if (idx === 2) {
+                        dispatch(LogoutUser());
+                      } else {
+                        navigate(getMenuPath(idx));
+                      }
                     }}
                     sx={{ width: 100 }}
                     direction={"row"}

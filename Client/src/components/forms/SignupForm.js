@@ -7,11 +7,32 @@ import {
   TextField,
 } from "@mui/material";
 import { Eye, EyeSlash } from "phosphor-react";
+import { SignupUser } from "../../redux/slices/auth";
+import { useDispatch } from "react-redux";
 
 const SignupForm = () => {
+
+  const dispatch = useDispatch();
+
   const [showPassword, setShowPassword] = useState(false);
+
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    try {
+      dispatch(SignupUser({ firstName, lastName, email, password }));
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   return (
     <>
+    <form onSubmit={handleSubmit}>
       <Stack spacing={3} mt={2}>
         <Stack spacing={4} direction={{xs:"column", sm:"row"}}>
           <TextField
@@ -20,6 +41,7 @@ const SignupForm = () => {
             id="firstname"
             label="First Name"
             variant="outlined"
+            onInput={(e) => setFirstName(e.target.value)}
           />
           <TextField
             required
@@ -27,6 +49,7 @@ const SignupForm = () => {
             id="lastname"
             label="Last Name"
             variant="outlined"
+            onInput={(e) => setLastName(e.target.value)}
           />
         </Stack>
 
@@ -36,6 +59,7 @@ const SignupForm = () => {
           id="email"
           label="Email"
           variant="outlined"
+          onInput={(e) => setEmail(e.target.value)}
         />
         <TextField
           fullWidth
@@ -43,6 +67,7 @@ const SignupForm = () => {
           id="password"
           label="Password"
           variant="outlined"
+          onInput={(e) => setPassword(e.target.value)}
           type={showPassword ? "text" : "password"}
           InputProps={{
             endAdornment: (
@@ -71,6 +96,7 @@ const SignupForm = () => {
       <Button sx={{mt:3}} fullWidth type="submit" variant="contained">
         Sign Up
       </Button>
+      </form>
     </>
   );
 };

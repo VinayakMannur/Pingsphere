@@ -7,12 +7,36 @@ import {
   TextField,
 } from "@mui/material";
 import { Eye, EyeSlash } from "phosphor-react";
+import { useDispatch } from "react-redux";
+import { useSearchParams } from "react-router-dom";
+import { UpdatePassword } from "../../redux/slices/auth";
 
 const NewPasswordForm = () => {
+
+  const [searchParams] = useSearchParams();
+
+  const dispatch = useDispatch();
+
   const [showPassword, setShowPassword] = useState(false);
+  const [password, setPassword] = useState("")
+  const [confirmPassword, setConfirmPassword] = useState("")
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    try {
+      if(password === confirmPassword){
+        dispatch(UpdatePassword({password, uniqueId: searchParams.get("token")}));
+      }else{
+        console.log("not equal");
+      }     
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   return (
     <>
+    <form onSubmit={handleSubmit}>
       <Stack spacing={3}>
         <TextField
           required
@@ -21,6 +45,7 @@ const NewPasswordForm = () => {
           label="Password"
           variant="outlined"
           type="password"
+          onInput={(e) => setPassword(e.target.value)}
         />
         <TextField
           required
@@ -28,6 +53,7 @@ const NewPasswordForm = () => {
           id="confirm-password"
           label="Confirm Password"
           variant="outlined"
+          onInput={(e) => setConfirmPassword(e.target.value)}
           type={showPassword ? "text" : "password"}
           InputProps={{
             endAdornment: (
@@ -51,6 +77,7 @@ const NewPasswordForm = () => {
           Submit
         </Button>
       </Stack>
+      </form>
     </>
   );
 };
