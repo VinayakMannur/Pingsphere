@@ -1,6 +1,6 @@
 import React from "react";
 import Chatss from "../../components/Chatss";
-import { Box, Stack } from "@mui/material";
+import { Box, Stack, Typography } from "@mui/material";
 import Conversation from "../../components/conversation";
 import { useTheme } from "@mui/material/styles";
 import Contact from "../../components/Contact";
@@ -8,10 +8,11 @@ import { useSelector } from "react-redux";
 import SharedMessage from "../../components/SharedMessage";
 import StarredMessage from "../../components/StarredMessages";
 import useResponsive from "../../hooks/useResponsive";
+import NoChatSVG from "../../assets/Illustration/NoChat"
 
 const GeneralApp = () => {
   const theme = useTheme();
-  const { sidebar } = useSelector((store) => store.app);
+  const { sidebar, chat_type, room_id } = useSelector((store) => store.app);
 
   const isMobile = useResponsive("between", "md", "xs", "sm");
 
@@ -33,7 +34,13 @@ const GeneralApp = () => {
                   : theme.palette.background.default,
             }}
           >
-            <Conversation />
+            {room_id !== null && chat_type === "individual" ? <Conversation />: 
+              <Stack spacing={2} sx={{height: "100%", width: "100%"}} alignItems={"center"} justifyContent={"center"}>
+                <NoChatSVG/>
+                <Typography variant="subtitle2">Select a conversation or start a new one</Typography>
+              </Stack>
+            }
+            
           </Box>
         )}
         {sidebar.open &&

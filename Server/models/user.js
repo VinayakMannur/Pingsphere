@@ -38,8 +38,17 @@ const User = sequelize.define("user", {
   },
   otp_expiry_time: {
     type: Sequelize.DATE
+  },
+  socket_id: {
+    type: Sequelize.STRING,
+  },
+  friends:{
+    type: Sequelize.JSON
+  },
+  status:{
+    type: Sequelize.ENUM,
+    values: ['Online', 'Offline']
   }
-
 });
 
 module.exports = User;

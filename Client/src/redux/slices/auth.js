@@ -56,6 +56,7 @@ export function LoginUser(formValues) {
             token: responce.data.authToken,
           })
         );
+        window.localStorage.setItem("user_id",responce.data.user_id)
         dispatch(showSnackbar({severity: "success", message: responce.data.msg}))
       })
       .catch((error) => {
@@ -67,6 +68,7 @@ export function LoginUser(formValues) {
 
 export function LogoutUser() {
   return async (dispatch, getState) => {
+    window.localStorage.removeItem("user_id")
     dispatch(slice.actions.signOut());
   };
 }
@@ -188,6 +190,7 @@ export function VerifyUser(formValues) {
             token: responce.data.authToken,
           })
         );
+        window.localStorage.setItem("user_id",responce.data.user_id)
         dispatch(showSnackbar({severity: "success", message: responce.data.msg}))
       })
       .catch((error) => {
