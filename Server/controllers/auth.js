@@ -23,7 +23,7 @@ exports.signup = async (req, res, next) => {
         
         const existing_user = await User.findOne({ where: { email: email } });
 
-        const filteredBody = filterObj(req.body, "firstName", "lastName", "password", "email")
+        const filteredBody = filterObj(req.body, "firstName", "lastName", "password", "email", "phonenumber")
 
         if(existing_user && existing_user.verified){
             res.status(400).json({status: "error", msg: "Email already in use, Please Login!"})
