@@ -59,18 +59,25 @@ exports.getFriends = async (req, res, next) =>{
             attributes: ["friends"],
             where: {id: req.user.userId}
         })
-        
-        const friends = await User.findAll({
-            attributes: ["id", "firstName", "lastName" ],
-            where: {
-                id:{
-                    [Op.in]: friends_list.friends
-                }
-                
-            }
-        })
 
-        return res.status(200).json({status: "success", data: friends, msg: "Friends found successfully !"})
+        if(friends_list.friends){
+            const friends = await User.findAll({
+                attributes: ["id", "firstName", "lastName" ],
+                where: {
+                    id:{
+                        [Op.in]: friends_list.friends
+                    }
+                    
+                }
+            })
+    
+            return res.status(200).json({status: "success", data: friends, msg: "Friends found successfully !"})
+        }
+        else{
+            return res.status(200).json({status: "success",  msg: "No friends !"})
+        }
+
+        
 
     } catch (error) {
         console.log(error);
@@ -82,35 +89,18 @@ exports.getRequests = async (req, res, next) =>{
     try {    
 
         const requests = await FriendRequest.findAll({
-            where: {
+            where:{
                 recipient: req.user.userId
-            }
+            },
+            include: {
+                model: User, 
+                as : "senderUsers", 
+                attributes: ["id", "firstName", "lastName"]
+            },
         })
+        // res.status(200).json({data: requests[2].senderUsers})
 
-        const requestIDS = requests.map((request)=>{
-            return request.id
-        })
-
-        const senderIDS = requests.map((request)=>{
-            return request.sender
-        })
-
-        const requestsFullInfo = await User.findAll({
-            attributes: ["id", "firstName", "lastName" ],
-            where: {
-                id:{
-                    [Op.in]: senderIDS
-                }
-                
-            }
-        })
-
-        const completeData = {
-            requestIDS: requestIDS,
-            requestsFullInfo: requestsFullInfo
-        }
-
-        res.status(200).json({status: "success", data: completeData, msg: "Friend requests found successfully !"})
+        res.status(200).json({status: "success", data: requests, msg: "Friend requests found successfully !"})
 
     } catch (error) {
         console.log(error);

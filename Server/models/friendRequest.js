@@ -8,13 +8,7 @@ const FriendRequest = sequelize.define("friendRequest", {
     autoIncrement: true,
     allowNull: false,
     primaryKey: true,
-  },
-  sender: {
-    type: Sequelize.INTEGER,
-  },
-  recipient: {
-    type: Sequelize.INTEGER,    
-  },
+  }
 });
 
 module.exports = FriendRequest;

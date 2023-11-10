@@ -19,6 +19,7 @@ import { useNavigate } from "react-router-dom";
 import useResponsive from "../hooks/useResponsive";
 import { LogoutUser } from "../redux/slices/auth";
 import { useDispatch } from "react-redux";
+import { socket } from "../socket";
 
 const getPath = (index) => {
   switch (index) {
@@ -52,6 +53,8 @@ const SideBar = () => {
   const [selected, setSelected] = useState(0);
 
   const { onToggleMode } = useSettings();
+
+  const user_id = window.localStorage.getItem("user_id")
 
   const isMobile = useResponsive("between", "md", "xs", "sm");
 
@@ -226,6 +229,7 @@ const SideBar = () => {
                     onClick={() => {
                       if (idx === 2) {
                         dispatch(LogoutUser());
+                        socket.emit("end", {user_id})
                       } else {
                         navigate(getMenuPath(idx));
                       }

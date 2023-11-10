@@ -112,7 +112,7 @@ exports.verifyOTP = async (req, res, next) =>{
             }
         }
         const authToken = jwt.sign(data, JWT_SECRET)
-        res.status(200).json({status: "success", authToken, user_id: user.id, msg: "OTP verified"})
+        res.status(200).json({status: "success", authToken, email,  user_id: user.id, msg: "OTP verified"})
 
 
     } catch (error) {
@@ -150,7 +150,7 @@ exports.login = async (req, res) => {
                 }
             }
             const authToken = jwt.sign(data, JWT_SECRET)
-            return res.status(200).json({status: "success", authToken, user_id: user.id, msg: "Login Successfull !!" });
+            return res.status(200).json({status: "success", authToken, email, user_id: user.id, msg: "Login Successfull !!" });
         }
         else {
             return res.status(400).json({status: "error", msg: "Invalid credentials !!" });

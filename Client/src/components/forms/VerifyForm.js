@@ -7,7 +7,7 @@ import { VerifyUser } from "../../redux/slices/auth";
 const VerifyForm = () => {
   const dispatch = useDispatch();
 
-  const {email} = useSelector((state) => state.auth)
+  const {signupEmail} = useSelector((state) => state.auth)
 
   const [otp, setOtp] = React.useState("");
 
@@ -17,7 +17,7 @@ const VerifyForm = () => {
 
   const handleComplete = (value) => {
     try {
-      dispatch(VerifyUser({otp: value, email}))
+      dispatch(VerifyUser({otp: value, email: signupEmail}))
     } catch (error) {
       console.log(error);
     }

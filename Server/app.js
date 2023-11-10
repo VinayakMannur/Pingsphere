@@ -6,12 +6,16 @@ const { Server } = require("socket.io");
 require("dotenv").config();
 
 const sequelize = require("./util/database");
+const { Op } = require("sequelize");
 
 const allRoutes = require("./routes/index");
+
 const User = require("./models/user");
 const ResetPassword = require("./models/resetPassword");
 const FriendRequest = require("./models/friendRequest");
-const OneToOneMessage = require("./models/oneToOneMessage");
+const Conversation = require("./models/conversation");
+const Message = require("./models/message");
+const Participant = require("./models/participant");
 
 const port = process.env.PORT;
 
@@ -29,28 +33,32 @@ app.use(allRoutes);
 //assoications
 User.hasMany(ResetPassword);
 ResetPassword.belongsTo(User)
-User.hasMany(FriendRequest,{
-  foreignKey: 'recipient'
-})
-FriendRequest.belongsTo(User);
-User.hasMany(FriendRequest,{
-  foreignKey: 'sender'
-})
-FriendRequest.belongsTo(User);
 
-User.hasMany(OneToOneMessage,{
-  foreignKey: 'participant1'
+User.hasMany(FriendRequest,{
+  foreignKey: 'recipient',
+  as: 'recipientRequests'
 })
-User.hasMany(OneToOneMessage,{
-  foreignKey: 'participant2'
+FriendRequest.belongsTo(User,{
+  foreignKey: 'recipient',
+  as: 'recipientUsers'
 })
-User.hasMany(OneToOneMessage,{
-  foreignKey: 'message_to'
+User.hasMany(FriendRequest,{
+  foreignKey: 'sender',
+  as: 'senderRequests'
 })
-User.hasMany(OneToOneMessage,{
-  foreignKey: 'message_from'
+FriendRequest.belongsTo(User,{
+  foreignKey: 'sender',
+  as: 'senderUsers'
 })
 
+// User.belongsToMany(Conversation, { through: Participant, foreignKey: 'userIds' });
+Conversation.belongsToMany(User, { through: Participant, foreignKey: 'conversationId' });
+Conversation.hasMany(Message);
+Message.belongsTo(Conversation);
+User.hasMany(Message, { foreignKey: 'senderId', as: 'sentMessages' });
+Message.belongsTo(User, { foreignKey: 'senderId', as: 'sender' });
+User.hasMany(Message, { foreignKey: 'receiverId', as: 'receivedMessages' });
+Message.belongsTo(User, { foreignKey: 'receiverId', as: 'receiver' });     
 
 
 //for socket
@@ -65,18 +73,6 @@ const io = new Server(server, {
 });
 
 
-
-sequelize
-  // .sync({ force: true })
-  .sync();
-
-server.listen(port || 5000, () => {
-  console.log(`Pingsphere server running on port ${port}`);
-});
-
-
-
-
 //for socket
 io.on("connection", async (socket) => {
   // console.log("????????", JSON.stringify(socket.handshake.query));
@@ -84,14 +80,14 @@ io.on("connection", async (socket) => {
 
   const socket_id = socket.id
 
-  console.log(`user connected is ${user_id} and ${socket_id}`);
+  console.log(`????????????????????user connected is ${user_id} and ${socket_id}`);
 
   if(user_id){
     const user = await User.update({socket_id: socket_id, status: "Online"},{
       where: {
         id: user_id
       }
-    })
+    }) 
   }
 
  //socket event listeners
@@ -107,7 +103,7 @@ io.on("connection", async (socket) => {
       attributes: ["socket_id"]
     })
 
-    await FriendRequest.create({sender: data.from, recipient: data.to, userId: data.from})
+    await FriendRequest.create({sender: data.from, recipient: data.to})
 
     //todo: create a friend request notification
 
@@ -174,35 +170,129 @@ io.on("connection", async (socket) => {
   })
 
   //fire when any user logs in to get the history of his conversation
-  // socket.on("get_direct_conversations", async ({user_id}, callback)=>{
+  socket.on("get_direct_conversations", async ({user_id}, callback)=>{
+    console.log("get all friends list of this useriD",user_id);
 
-  //get all conversation of user of uder_id
-  //inside participents in onetoonemessages table get all the things where participents is user_id and even the names of all participenst where the user_id is linked
-  // get user firstname last name id email status
-  //   const existing_conversation = await OneToOneMessage.findAll({
-  //     where: {
-  //       participant1: user_id,
-  //       participant2: user_id
-  //     },
-  //     include: User
-  //   })
+    const all_friends = await User.findByPk(user_id,{
+      attributes: ["friends"]
+    })
 
-  //   callback(existing_conversation)
-  // })
+    const receiverIds = all_friends.friends;
+    console.log(receiverIds);
+    const friendsDetails = await sequelize.query(`
+      SELECT m.*, 
+      u.id as senderId, u.firstName as senderFirstName, u.lastName as senderLastName, u.status as senderStatus,
+      r.id as receiverId, r.firstName as receiverFirstName, r.lastName as receiverLastName, r.status as receiverStatus
+      FROM \`Messages\` m
+      INNER JOIN \`Users\` u ON m.\`senderId\` = u.\`id\`
+      LEFT JOIN \`Users\` r ON m.\`receiverId\` = r.\`id\`
+      WHERE m.\`receiverId\` IN (:receiverIds)
+      AND m.\`senderId\` = :senderId  -- Add this condition
+      AND m.\`createdAt\` = (
+      SELECT MAX(m2.\`createdAt\`)
+      FROM \`Messages\` m2
+      WHERE m2.\`receiverId\` = m.\`receiverId\`
+      LIMIT 1
+      );
+      `, {
+      replacements: { receiverIds, senderId: user_id }, // Pass the array of receiver IDs and the sender ID as replacements
+      type: sequelize.QueryTypes.SELECT, // Specify the query type as SELECT
+    });
+
+    // console.log("this is friends deatails",friends_details);
+    //get all conversation of user of uder_id
+    //inside participents in onetoonemessages table get all the things where participents is user_id and even the names of all participenst where the user_id is linked
+    // get user firstname last name id email status
+
+    callback(friendsDetails)
+  })
+
+  socket.on("start_conversation", async (data)=>{
+    const {to, from} = data
+    // console.log("start_conversation",data);
+    //get the existing conversation between two users
+
+    const userIdsArray = [to, from]
+    const existing_conversation = await Participant.findOne({
+      where: {
+        [Op.and]: userIdsArray.map(userId => {
+          return sequelize.where(
+            sequelize.literal(`JSON_CONTAINS(userIds, '${userId}')`),
+            true
+          );
+        }),
+      }
+    })
+
+    const toUserDetails = await User.findByPk(to,{
+      attributes:["id", "firstName", "lastName", "status", "phonenumber", "avatar"]
+    })
+
+    // console.log(existing_conversation);
+
+    //if no existing conversation
+    if(existing_conversation === null){
+      //create a new conversation id
+
+      const conversation = await Conversation.create()
+      // console.log("xsfsadas",conversation.id);
+
+      const adding_conversationId = await Participant.create({
+        conversationId: conversation.id,
+        userIds: [to, from]
+      })
+
+      const data = {
+        adding_conversationId: adding_conversationId,
+        toUserDetails: toUserDetails
+      }
+      // console.log("asdasd",data);
+      socket.emit("start_chat", data)
+    }
+
+  //   //if exisiting conversation
+    else{
+      const data = {
+        adding_conversationId: existing_conversation,
+        toUserDetails: toUserDetails
+      }
+      // console.log("asdasd",data);
+      socket.emit("start_chat", data)
+    }
+  })
 
   //handle text message event
-  socket.on("text_message", (data) => {
-    console.log("text_message",data);
+  socket.on("text_message", async (data) => {
+    // console.log("text_message",data);
 
-    // data: to, from ,text,
+    const { message, conversationId, from, to } = data
 
-    // create a new conversation if doesnt exist , if exist add new message to it
+    const msg = await Message.create({
+      text: message,
+      conversationId: conversationId,
+      senderId: from,
+      receiverId: to,
+    })
 
-    // save to db
-
+    const to_user = await User.findByPk(to, {
+      attributes: ["socket_id"]
+    })
+    const from_user = await User.findByPk(from, {
+      attributes: ["socket_id"]
+    })
+    console.log("TOUSER", to_user.socket_id, "fromuser", from_user.socket_id);
     // emit incoming message - to user
 
-    // emit outgoing message - from user
+    io.to(to_user.socket_id).emit("new_message",{
+      conversationId: conversationId,
+      snack: "New Message",
+      message: msg,
+    })
+    io.to(from_user.socket_id).emit("new_message",{
+      conversationId: conversationId,
+      snack: "Message Sent",
+      message: msg,
+    })
 
   })
 
@@ -214,13 +304,26 @@ io.on("connection", async (socket) => {
         }
       })
 
-      //Todo : boradcast user disconnected to friends
+      //Todo : boradcast user disconnected to his friends
 
       console.log("closing connection");
       socket.disconnect(0)
     }
   });
 })
+
+sequelize
+  // .sync({ force: true })
+  .sync();
+
+server.listen(port || 5000, () => {
+  console.log(`Pingsphere server running on port ${port}`);
+});
+
+
+
+
+
 
 
 // const morgan = require('morgan')

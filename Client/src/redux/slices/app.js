@@ -53,7 +53,6 @@ const slice = createSlice({
     },
     selectConversation(state, action){
       state.chat_type = "individual"
-      state.room_id = action.payload.room_id
     }
   },
 });
@@ -147,8 +146,8 @@ export const getFriendRequests = () => {
   };
 };
 
-export const SelectConversation = ({room_id}) => {
+export const SelectConversation = () => {
   return (dispatch, getState) =>{
-    dispatch(slice.actions.selectConversation({room_id}))
+    dispatch(slice.actions.selectConversation())
   }
 }

@@ -9,23 +9,27 @@ import ChatElement from "./ChatElement";
 import useResponsive from "../hooks/useResponsive";
 import Friends from "./Friends";
 import { socket } from "../socket";
-// import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { FetchDirectConversation } from "../redux/slices/conversation";
 
 const Chatss = () => {
   const theme = useTheme();
+  const dispatch = useDispatch();
   const isMobile = useResponsive("between", "md", "xs", "sm");
 
   const [openDialog, setOpenDialog] = useState(false);
 
   const user_id = window.localStorage.getItem("user_id");
 
-  // const { conversations } = useSelector(
-  //   (state) => state.conversation.direct_chat
-  // );
-
+  const { conversations } = useSelector(
+    (state) => state.conversation.direct_chat
+  );
+    console.log(conversations);
   useEffect(() => {
     socket.emit("get_direct_conversations", { user_id }, (data) => {
       //data is list of existing conversations
+      console.log(data);
+      dispatch(FetchDirectConversation({data}))
     });
   }, []);
 
@@ -108,22 +112,22 @@ const Chatss = () => {
             }}
           >
             <SimpleBarStyle timeout={500} clickOnTrack={false}>
-              <Stack spacing={1}>
+              {/* <Stack spacing={1}>
                 <Typography variant="subtitle2" sx={{ color: "#767676" }}>
                   Pinned
                 </Typography>
                 {ChatList.filter((el) => el.pinned).map((el) => {
                   return <ChatElement {...el} />;
                 })}
-              </Stack>
-              {/* <Stack spacing={1}>
+              </Stack> */}
+              <Stack spacing={1}>
               <Typography variant="subtitle2" sx={{ color: "#767676" }}>
                 All Chats
               </Typography>
               {conversations.filter((el) => !el.pinned).map((el) => {
                 return <ChatElement {...el} />;
               })}
-            </Stack> */}
+            </Stack>
             </SimpleBarStyle>
           </Stack>
         </Stack>

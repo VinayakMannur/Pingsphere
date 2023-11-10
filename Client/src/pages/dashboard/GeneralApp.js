@@ -12,7 +12,8 @@ import NoChatSVG from "../../assets/Illustration/NoChat"
 
 const GeneralApp = () => {
   const theme = useTheme();
-  const { sidebar, chat_type, room_id } = useSelector((store) => store.app);
+  const { sidebar, chat_type } = useSelector((store) => store.app);
+  const {conversationId} = useSelector((state)=> state.conversation.direct_chat)
 
   const isMobile = useResponsive("between", "md", "xs", "sm");
 
@@ -34,7 +35,7 @@ const GeneralApp = () => {
                   : theme.palette.background.default,
             }}
           >
-            {room_id !== null && chat_type === "individual" ? <Conversation />: 
+            {conversationId !== null && chat_type === "individual" ? <Conversation />: 
               <Stack spacing={2} sx={{height: "100%", width: "100%"}} alignItems={"center"} justifyContent={"center"}>
                 <NoChatSVG/>
                 <Typography variant="subtitle2">Select a conversation or start a new one</Typography>

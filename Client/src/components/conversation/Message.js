@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Stack } from "@mui/material";
-import { Chat_History } from "../../data/index";
+
 import {
   DocMsg,
   LinkMsg,
@@ -9,28 +9,33 @@ import {
   TextMsg,
   Timeline,
 } from "./MsgTypes";
+import { useSelector } from "react-redux";
 
 const Message = ({menu}) => {
+
+  const {current_conversation} = useSelector((state)=> state.conversation.direct_chat)
+
   return (
     <Box p={2}>
       <Stack spacing={2}>
-        {Chat_History.map((el, idx) => {
+        {current_conversation && current_conversation.map((el, idx) => {
           switch (el.type) {
             case "divider":
               return <Timeline el={el} idx={idx}/>;
             case "msg":
-              switch (el.subtype) {
-                case "img":
-                  return <MediaMsg el={el} idx={idx} menu={menu}/>;
-                case "doc":
-                  return <DocMsg el={el} idx={idx} menu={menu}/>;
-                case "link":
-                  return <LinkMsg el={el} idx={idx} menu={menu}/>;
-                case "reply":
-                  return <ReplyMsg el={el} idx={idx} menu={menu}/>;
-                default:
-                  return <TextMsg el={el} idx={idx} menu={menu}/>;
-              }
+              return <TextMsg el={el} idx={idx} menu={menu}/>;
+              // switch (el.subtype) {
+              //   case "img":
+              //     return <MediaMsg el={el} idx={idx} menu={menu}/>;
+              //   case "doc":
+              //     return <DocMsg el={el} idx={idx} menu={menu}/>;
+              //   case "link":
+              //     return <LinkMsg el={el} idx={idx} menu={menu}/>;
+              //   case "reply":
+              //     return <ReplyMsg el={el} idx={idx} menu={menu}/>;
+              //   default:
+              //     return <TextMsg el={el} idx={idx} menu={menu}/>;
+              // }
             default:
               return <></>;
           }

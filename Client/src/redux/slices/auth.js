@@ -8,6 +8,7 @@ const initialState = {
   isLoading: false,
   email: "",
   error: false,
+  signupEmail: '',
 };
 
 const slice = createSlice({
@@ -21,13 +22,15 @@ const slice = createSlice({
     logIn(state, action) {
       state.isLoggedIn = action.payload.isLoggedIn;
       state.token = action.payload.token;
+      state.email = action.payload.email
     },
     signOut(state, action) {
       state.isLoggedIn = false;
       state.token = "";
+      state.email = ''
     },
     updateSignupEmail(state, action) {
-      state.email = action.payload.email;
+      state.signupEmail = action.payload.email;
     },
   },
 });
@@ -54,6 +57,7 @@ export function LoginUser(formValues) {
           slice.actions.logIn({
             isLoggedIn: true,
             token: responce.data.authToken,
+            email: responce.data.email
           })
         );
         window.localStorage.setItem("user_id",responce.data.user_id)
@@ -184,10 +188,12 @@ export function VerifyUser(formValues) {
       )
       .then((responce) => {
         console.log(responce);
+        dispatch(slice.actions.updateSignupEmail({ email: '' }));
         dispatch(
           slice.actions.logIn({
             isLoggedIn: true,
             token: responce.data.authToken,
+            email: responce.data.email
           })
         );
         window.localStorage.setItem("user_id",responce.data.user_id)

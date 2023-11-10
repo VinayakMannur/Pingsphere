@@ -5,6 +5,8 @@ import StyledBadge from "./StyleBadge";
 import { socket } from "../socket";
 import { Chat } from "phosphor-react";
 
+const user_id = window.localStorage.getItem("user_id");
+
 const StyledChatBox = styled(Box)(({ theme }) => ({
   "&:hover": {
     cursor: "pointer",
@@ -14,7 +16,7 @@ const StyledChatBox = styled(Box)(({ theme }) => ({
 function UserComponent({ firstName, lastName, id, img, online }) {
   const theme = useTheme();
   const name = `${firstName} ${lastName}`;
-  const user_id = window.localStorage.getItem("user_id");
+
   return (
     <StyledChatBox
       sx={{
@@ -62,7 +64,7 @@ function UserComponent({ firstName, lastName, id, img, online }) {
   );
 }
 
-function FriendsComponent({ firstName, lastName, id, img, online }) {
+function FriendsComponent({ firstName, lastName, id, img, online, handleClose }) {
   const theme = useTheme();
   const name = `${firstName} ${lastName}`;
   return (
@@ -97,7 +99,10 @@ function FriendsComponent({ firstName, lastName, id, img, online }) {
           </Stack>
         </Stack>
         <Stack direction={"row"} spacing={2} alignItems={"center"}>
-          <IconButton onClick={() => {}}>
+          <IconButton onClick={() => {
+            handleClose()
+            socket.emit("start_conversation", {to: id, from: parseInt(user_id)})
+          }}>
             <Chat />
           </IconButton>
         </Stack>
@@ -119,6 +124,7 @@ function FriendRequestComponent({ firstName, lastName, id, img, online, rid }) {
       p={1}
     >
       <Stack
+        key={id}
         direction={"row"}
         alignItems={"center"}
         justifyContent={"space-between"}

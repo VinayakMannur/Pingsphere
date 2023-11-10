@@ -19,12 +19,13 @@ const SignupForm = () => {
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   const [email, setEmail] = useState("");
+  const [phonenumber, setPhonenumber] = useState('')
   const [password, setPassword] = useState("");
 
   function handleSubmit(e) {
     e.preventDefault();
     try {
-      dispatch(SignupUser({ firstName, lastName, email, password }));
+      dispatch(SignupUser({ firstName, lastName, email, password, phonenumber }));
     } catch (error) {
       console.log(error);
     }
@@ -60,6 +61,14 @@ const SignupForm = () => {
           label="Email"
           variant="outlined"
           onInput={(e) => setEmail(e.target.value)}
+        />
+        <TextField
+          required
+          fullWidth
+          id="phonenumber"
+          label="Phone Number"
+          variant="outlined"
+          onInput={(e) => setPhonenumber(e.target.value)}
         />
         <TextField
           fullWidth

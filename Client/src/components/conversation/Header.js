@@ -12,9 +12,13 @@ import { CaretDown, MagnifyingGlass, Phone, VideoCamera } from "phosphor-react";
 import { faker } from "@faker-js/faker";
 import StyledBadge from "../StyleBadge";
 import { ToggleSidebar } from "../../redux/slices/app";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 const Header = () => {
+
+  const { to_user_name, to_user_status } = useSelector(
+    (state) => state.conversation.direct_chat
+  );
   const theme = useTheme();
   const dispatch = useDispatch();
   return (
@@ -53,9 +57,9 @@ const Header = () => {
           </Box>
           <Stack spacing={0.1}>
             <Typography variant="subtitle2">
-              {faker.name.firstName()}
+              {to_user_name}
             </Typography>
-            <Typography variant="caption">Online</Typography>
+            <Typography variant="caption">{to_user_status? "Online": "Offline"}</Typography>
           </Stack>
         </Stack>
         <Stack alignItems={"center"} direction={"row"} spacing={2}>

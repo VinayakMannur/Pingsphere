@@ -23,7 +23,7 @@ const UsersList = () => {
   );
 };
 
-const FriendsList = () => {
+const FriendsList = ({handleClose}) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -31,12 +31,12 @@ const FriendsList = () => {
   }, []);
 
   const { friends } = useSelector((state) => state.app);
-
+  console.log(friends);
   return (
     <>
-      {friends.map((el, idx) => {
+      {friends && friends.map((el, idx) => {
         // todo
-        return <FriendsComponent key={el.id} {...el}/>
+        return <FriendsComponent key={el.id} {...el} handleClose={handleClose}/>
       })}
     </>
   );
@@ -52,12 +52,12 @@ const FriendRequestList = () => {
   const { friendRequests } = useSelector((state) => state.app);
 
   // const { requests } = useSelector((state) => state.app);
-  // console.log(requests);
+  console.log(friendRequests);
   return (
     <>
-      {friendRequests.length>0 && friendRequests.requestsFullInfo.map((el, idx) => {
+      {friendRequests && friendRequests.map((el, idx) => {
         //todo should send the actual request id
-        return <FriendRequestComponent key={el.id} {...el} rid={friendRequests.requestIDS[idx]}/>
+        return <FriendRequestComponent key={el.id} {...el.senderUsers} rid={el.id}/>
       })
       }
     </>
@@ -90,7 +90,7 @@ const Friends = ({ open, handleClose }) => {
                 case 0: //allusers
                   return <UsersList />;
                 case 1: //friends
-                  return <FriendsList />;
+                  return <FriendsList handleClose={handleClose}/>;
                 case 2: //requests
                   return <FriendRequestList />;
                 default:
