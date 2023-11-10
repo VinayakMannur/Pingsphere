@@ -15,7 +15,6 @@ import Picker from "@emoji-mart/react";
 import { Actions } from "../../data";
 import { useDispatch, useSelector } from "react-redux";
 import { socket } from "../../socket";
-import { FetchCurrentConversation } from "../../redux/slices/conversation";
 
 const StyledInput = styled(TextField)(({ theme }) => ({
   "& .MuiInputBase-input": {
@@ -94,7 +93,7 @@ const ChatInput = ({ inputRef, value, setValue, setOpenPicker }) => {
   );
 };
 
-const Footer = ({setScroll}) => {
+const Footer = () => {
   const dispatch = useDispatch()
   const theme = useTheme();
   const [openPicker, setOpenPicker] = useState(false);
@@ -122,8 +121,7 @@ const Footer = ({setScroll}) => {
   }
 
   return (
-    <Box
-    
+    <Box  
       p={2}
       sx={{
         width: "100%",
@@ -182,9 +180,7 @@ const Footer = ({setScroll}) => {
                 from: parseInt(user_id),
                 to: to_user
               })
-              setValue('')
-              setScroll(value)
-              
+              setValue('') 
             }}>
               <PaperPlaneTilt color="#fff" />
             </IconButton>

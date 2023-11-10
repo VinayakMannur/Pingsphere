@@ -5,26 +5,33 @@ import Footer from "./Footer";
 import Message from "./Message";
 import { FetchDirectConversation } from "../../redux/slices/conversation";
 import { socket } from "../../socket";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 const Conversation = () => {
   const dispatch = useDispatch()
   const scrollContainerRef = useRef();
-  const [scroll, setScroll] = useState('')
   const user_id = window.localStorage.getItem("user_id")
-  const scrollToBottom = () => {
-    scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
-  };
 
+  const {current_conversation} = useSelector((state)=> state.conversation.direct_chat)
+
+  const scrollToBottom = () => {
+    if (scrollContainerRef.current) {
+      const scrollHeight = scrollContainerRef.current.scrollHeight;
+      const clientHeight = scrollContainerRef.current.clientHeight;
+      const scrollBottom = scrollHeight - clientHeight;
+      scrollContainerRef.current.scrollTop = scrollBottom;
+    }
+  };
+  // console.log("scroll", scroll);
   useLayoutEffect(() => {
+    scrollToBottom();
     socket.emit("get_direct_conversations", { user_id }, (data) => {
       //data is list of existing conversations
       console.log(data);
       dispatch(FetchDirectConversation({data}))
     });
     console.log('runnned');
-    scrollToBottom();
-  }, [scroll]);
+  }, [current_conversation]);
 
   return (
     <Stack height={"100%"} maxHeight={"100vh"} width={"auto"}>
@@ -58,7 +65,7 @@ const Conversation = () => {
       </Box>
       
       {/* footer  */}
-      <Footer setScroll={setScroll}/>
+      <Footer/>
     </Stack>
   );
 };

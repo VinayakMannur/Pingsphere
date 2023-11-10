@@ -187,19 +187,20 @@ io.on("connection", async (socket) => {
       INNER JOIN \`Users\` u ON m.\`senderId\` = u.\`id\`
       LEFT JOIN \`Users\` r ON m.\`receiverId\` = r.\`id\`
       WHERE m.\`receiverId\` IN (:receiverIds)
-      AND m.\`senderId\` = :senderId  -- Add this condition
-      AND m.\`createdAt\` = (
-      SELECT MAX(m2.\`createdAt\`)
+      AND m.\`senderId\` = :senderId
+      AND (m.\`receiverId\`, m.\`createdAt\`) IN (
+      SELECT m2.\`receiverId\`, MAX(m2.\`createdAt\`) as maxCreatedAt
       FROM \`Messages\` m2
-      WHERE m2.\`receiverId\` = m.\`receiverId\`
-      LIMIT 1
-      );
-      `, {
+      WHERE m2.\`receiverId\` IN (:receiverIds)
+      AND m2.\`senderId\` = :senderId
+      GROUP BY m2.\`receiverId\`
+      )
+    `, {
       replacements: { receiverIds, senderId: user_id }, // Pass the array of receiver IDs and the sender ID as replacements
       type: sequelize.QueryTypes.SELECT, // Specify the query type as SELECT
     });
 
-    // console.log("this is friends deatails",friends_details);
+    console.log("this is friends deatails",friendsDetails);
     //get all conversation of user of uder_id
     //inside participents in onetoonemessages table get all the things where participents is user_id and even the names of all participenst where the user_id is linked
     // get user firstname last name id email status
