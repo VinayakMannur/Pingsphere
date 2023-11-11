@@ -15,12 +15,18 @@ import { ToggleSidebar } from "../../redux/slices/app";
 import { useDispatch, useSelector } from "react-redux";
 
 const Header = () => {
+  const theme = useTheme();
+  const dispatch = useDispatch();
 
   const { to_user_name, to_user_status } = useSelector(
     (state) => state.conversation.direct_chat
   );
-  const theme = useTheme();
-  const dispatch = useDispatch();
+
+  const { groupName, groupAdmin } = useSelector(
+    (state) => state.conversation.group_chat
+  );
+  const { chat_type } = useSelector((state) => state.app);
+  // console.log(chat_type, groupName, groupAdmin);
   return (
     <Box
       p={2}
@@ -56,10 +62,21 @@ const Header = () => {
             </StyledBadge>
           </Box>
           <Stack spacing={0.1}>
-            <Typography variant="subtitle2">
-              {to_user_name}
-            </Typography>
-            <Typography variant="caption">{to_user_status? "Online": "Offline"}</Typography>
+            {chat_type === "group" ? (
+              <>
+                <Typography variant="subtitle2">{groupName}</Typography>
+                <Typography variant="caption">
+                  {`Created by ${groupAdmin}`}
+                </Typography>
+              </>
+            ) : (
+              <>
+                <Typography variant="subtitle2">{to_user_name}</Typography>
+                <Typography variant="caption">
+                  {to_user_status ? "Online" : "Offline"}
+                </Typography>
+              </>
+            )}
           </Stack>
         </Stack>
         <Stack alignItems={"center"} direction={"row"} spacing={2}>

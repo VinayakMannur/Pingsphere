@@ -149,6 +149,8 @@ const GroupChats = () => {
   const handleCloseCreateGroupDialog = () => {
     setOpenCreateGroup(false);
   };
+  
+  const {groupList} = useSelector((state)=> state.conversation.group_chat)
 
   return (
     <Box
@@ -220,19 +222,19 @@ const GroupChats = () => {
           }}
         >
           <SimpleBarStyle timeout={500} clickOnTrack={false}>
-            <Stack spacing={1}>
+            {/* <Stack spacing={1}>
               <Typography variant="subtitle2" sx={{ color: "#767676" }}>
                 Pinned
               </Typography>
               {ChatList.filter((el) => el.pinned).map((el) => {
                 return <ChatElement {...el} />;
               })}
-            </Stack>
+            </Stack> */}
             <Stack spacing={1}>
               <Typography variant="subtitle2" sx={{ color: "#767676" }}>
-                All Chats
+                All Groups
               </Typography>
-              {ChatList.filter((el) => !el.pinned).map((el) => {
+              {groupList.filter((el) => !el.pinned).map((el) => {
                 return <ChatElement {...el} />;
               })}
             </Stack>

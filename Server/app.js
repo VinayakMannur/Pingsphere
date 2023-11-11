@@ -313,6 +313,7 @@ io.on("connection", async (socket) => {
       name: data.groupName
     })
     
+    socket.join(createdGroup.id)
     const selectedMembers = data.selectedMembers.map((member)=>{
       return {
         groupId: createdGroup.id,
@@ -357,6 +358,39 @@ io.on("connection", async (socket) => {
           message: `You were added to ${data.groupName} group!`
         })
       }
+    })
+  })
+
+  socket.on("get_group_list", async ({user_id}, callback)=>{
+    const userId = parseInt(user_id)
+
+    const groupNames = await Group.findAll({
+
+      include: [
+        {
+          model: User,
+          where: { id: userId},
+          through: {model: GroupMember, attributes: []} 
+        }
+      ],
+      attributes: ["id","name"]
+    })
+
+    // console.log(groupNames[0].dataValues);
+    const gropInfo = groupNames.map((group) => ({ id: group.id, groupName: group.name }));
+    callback(gropInfo)
+  })
+
+  socket.on("grp_message", async(data)=>{
+    // console.log(data);
+    const grpMessage = await GroupMessage.create({
+      text: data.message,
+      groupId: data.groupId,
+      senderId: data.from
+    })
+    console.log(`User ${socket.id} sent a message to group ${data.groupId}`);
+    io.to(data.groupId).emit("message_from_group",{
+      msg: "message_from_group"
     })
   })
 

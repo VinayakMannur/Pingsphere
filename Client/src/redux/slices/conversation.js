@@ -14,7 +14,13 @@ const initialState = {
     to_user_name: null,
     to_user_status: null,
   },
-  group_chat: {},
+  group_chat: {
+    groupList: [],
+    groupId: null,
+    groupName: '',
+    groupAdmin: '',
+    conversation: [],
+  },
 };
 
 const slice = createSlice({
@@ -76,6 +82,29 @@ const slice = createSlice({
     emptyCurrentConversation(state, action){
       state.direct_chat.current_conversation = null
     },
+    updateGroupList(state, action){
+      const list = action.payload.map((el)=>{
+        return {
+          id: el.id,
+          img: faker.image.avatar(),
+          name: el.groupName,
+          msg: faker.music.songName(),
+          time: "9:36",
+          unread: 0,
+          pinned: false,
+          online: true,
+        }
+      })
+      state.group_chat.groupList = list
+    },
+    updateGrpNameAdmin(state, action){
+      state.group_chat.groupId = action.payload.groupId
+      state.group_chat.groupName = action.payload.groupName
+      state.group_chat.groupAdmin = action.payload.groupAdmin
+    },
+    pushToGrpConversation(state, action){
+      state.group_chat.conversation = action.payload
+    }
   },
 });
 
@@ -128,6 +157,25 @@ export function FetchCurrentConversation(){
     }
   };
 };
+
+export const UpdateGroupList = (data) =>{
+  return async (dispatch, getState) => {
+    // console.log(data);
+    dispatch(slice.actions.updateGroupList(data));
+  };
+}
+
+export const UpdateGrpNameAdmin = ({groupId, groupName, groupAdmin}) => {
+  return async (dispatch, getState)=>{
+    dispatch(slice.actions.updateGrpNameAdmin({groupId, groupName, groupAdmin}))
+  }
+}
+
+export const PushToGrpConversation = ({msg}) =>{
+  return async (dispatch, getState) => {
+    dispatch(slice.actions.pushToGrpConversation({msg}))
+  }
+}
 
 
 // export function CreateGroup({groupName, selectedMembers}){

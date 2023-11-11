@@ -81,6 +81,10 @@ const DashboardLayout = () => {
       socket.on("added_to_group",(data)=>{
         dispatch(showSnackbar({severity: "success", message: data.message}))
       })
+
+      socket.on("message_from_group", (data)=>{
+        dispatch(showSnackbar({severity: "success", message: data.msg}))
+      })
     }
 
     return () =>{
@@ -89,6 +93,8 @@ const DashboardLayout = () => {
       socket?.off("request_sent")
       socket?.off("start_chat")
       socket?.off("new_message")
+      socket?.off("group_created")
+      socket?.off("added_to_group")
     }
 
   },[isLoggedIn, socket])

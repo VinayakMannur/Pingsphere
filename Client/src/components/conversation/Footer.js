@@ -15,6 +15,7 @@ import Picker from "@emoji-mart/react";
 import { Actions } from "../../data";
 import { useDispatch, useSelector } from "react-redux";
 import { socket } from "../../socket";
+import { PushToGrpConversation } from "../../redux/slices/conversation";
 
 const StyledInput = styled(TextField)(({ theme }) => ({
   "& .MuiInputBase-input": {
@@ -97,10 +98,13 @@ const Footer = () => {
   const dispatch = useDispatch()
   const theme = useTheme();
   const [openPicker, setOpenPicker] = useState(false);
-  const user_id = window.localStorage.getItem("user_id");
-  const {conversationId, to_user} = useSelector((state)=> state.conversation.direct_chat)
   const [value, setValue] = useState("");
   const inputRef = useRef(null);
+  
+  const user_id = window.localStorage.getItem("user_id");
+  const { chat_type } = useSelector((state) => state.app);
+  const { groupId } = useSelector((state)=> state.conversation.group_chat)
+  const {conversationId, to_user} = useSelector((state)=> state.conversation.direct_chat)
 
   function handleEmojiClick(emoji) {
     const input = inputRef.current;
@@ -173,14 +177,31 @@ const Footer = () => {
             justifyContent={"center"}
           >
             <IconButton onClick={()=>{
-              console.log(to_user);
-              socket.emit("text_message",{
-                message: value,
-                conversationId: conversationId,
-                from: parseInt(user_id),
-                to: to_user
-              })
-              setValue('') 
+              // console.log(to_user);
+              if(chat_type === "group"){
+                // console.log("loging grp message", value);
+                dispatch(PushToGrpConversation({
+                  id: 1,
+                  type: "msg",
+                  message: value,
+                  outgoing: true,
+                  incoming: false
+                }))
+                socket.emit("grp_message",{
+                  message: value,
+                  groupId,
+                  from: parseInt(user_id),
+                })
+                setValue('')
+              }else{
+                socket.emit("text_message",{
+                  message: value,
+                  conversationId: conversationId,
+                  from: parseInt(user_id),
+                  to: to_user
+                })
+                setValue('')
+              }
             }}>
               <PaperPlaneTilt color="#fff" />
             </IconButton>

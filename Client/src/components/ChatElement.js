@@ -3,12 +3,14 @@ import { Avatar, Badge, Box, Stack, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import StyledBadge from "./StyleBadge";
 import { useDispatch, useSelector } from "react-redux";
-import { SelectConversation } from "../redux/slices/app";
+import { SelectConversation, UpdateConversation } from "../redux/slices/app";
 import {
   EmptyCurrentConversation,
   UpdateConversationId,
+  UpdateGrpNameAdmin,
 } from "../redux/slices/conversation";
 import { socket } from "../socket";
+import { useEffect } from "react";
 
 const ChatElement = ({
   id,
@@ -27,6 +29,8 @@ const ChatElement = ({
   const { to_user_name } = useSelector(
     (state) => state.conversation.direct_chat
   );
+  const { chat_type } = useSelector((state) => state.app);
+  const { groupName, groupAdmin } = useSelector((state)=> state.conversation.group_chat)
 
   return (
     <Box
@@ -42,16 +46,22 @@ const ChatElement = ({
       }}
       onClick={() => {
         // console.log(id, user_id);
-        dispatch(
-          UpdateConversationId({
-            conversationId: id,
-            to_user: user_id,
-            to_user_name: name,
-            to_user_status: true,
-          })
-        );
-        dispatch(EmptyCurrentConversation());
-        dispatch(SelectConversation());
+        if(chat_type === "group"){
+          dispatch(UpdateGrpNameAdmin({groupId: id, groupName: name, groupAdmin: "TODO"}))
+        }
+        else{
+          dispatch(
+            UpdateConversationId({
+              conversationId: id,
+              to_user: user_id,
+              to_user_name: name,
+              to_user_status: true,
+            })
+          );
+          dispatch(EmptyCurrentConversation());
+          dispatch(SelectConversation());
+        }
+        
       }}
     >
       <Stack direction={"row"} justifyContent={"space-between"} p={1.1}>
