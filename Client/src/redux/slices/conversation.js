@@ -75,7 +75,7 @@ const slice = createSlice({
     },
     emptyCurrentConversation(state, action){
       state.direct_chat.current_conversation = null
-    }
+    },
   },
 });
 
@@ -107,27 +107,45 @@ export const EmptyCurrentConversation = () =>{
 }
 
 export function FetchCurrentConversation(){
-
   return async (dispatch, getState) => {
     try {
-        const conversationId = getState().conversation.direct_chat.conversationId;
-        const authToken = getState().auth.token;
+      const conversationId = getState().conversation.direct_chat.conversationId;
+      const authToken = getState().auth.token;
 
-        const response = await axios.get("/msg/get-messages", {
-            params: {
-                conversationId: conversationId
-            },
-            headers: {
-                "Content-Type": "application/json",
-                "authToken": authToken
-            }
-        });
-        dispatch(slice.actions.fetchCurrentConversation({chat_history: response.data.data}))
-        console.log(response.data.data);
-        
+      const response = await axios.get("/msg/get-messages", {
+          params: {
+            conversationId: conversationId
+          },
+          headers: {
+            "Content-Type": "application/json",
+            "authToken": authToken
+          }
+      });
+      dispatch(slice.actions.fetchCurrentConversation({chat_history: response.data.data}))
+      console.log(response.data.data); 
     } catch (error) {
-        console.error(error);
-        
+      console.error(error); 
     }
   };
 };
+
+
+// export function CreateGroup({groupName, selectedMembers}){
+//   return async(dispatch, getState) => {
+//     try {
+//       const authToken = getState().auth.token;
+//       const response = await axios.post("/group/create-group",{
+//         groupName,
+//         selectedMembers
+//       },{
+//         headers: {
+//           "Content-Type": "application/json",
+//           "authToken": authToken
+//         }
+//       })
+//       console.log(response);
+//     } catch (error) {
+//       console.error(error); 
+//     }
+//   }
+// }

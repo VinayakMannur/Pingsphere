@@ -53,6 +53,9 @@ const slice = createSlice({
     },
     selectConversation(state, action){
       state.chat_type = "individual"
+    },
+    updateConversation(state, action){
+      state.chat_type = "group"
     }
   },
 });
@@ -149,5 +152,11 @@ export const getFriendRequests = () => {
 export const SelectConversation = () => {
   return (dispatch, getState) =>{
     dispatch(slice.actions.selectConversation())
+  }
+}
+
+export const UpdateConversation = () => {
+  return (dispatch, getState) =>{
+    dispatch(slice.actions.updateConversation())
   }
 }

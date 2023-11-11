@@ -16,6 +16,9 @@ const FriendRequest = require("./models/friendRequest");
 const Conversation = require("./models/conversation");
 const Message = require("./models/message");
 const Participant = require("./models/participant");
+const Group = require("./models/group");
+const GroupMessage = require("./models/groupMessage");
+const GroupMember = require("./models/groupMember");
 
 const port = process.env.PORT;
 
@@ -51,6 +54,16 @@ FriendRequest.belongsTo(User,{
   as: 'senderUsers'
 })
 
+User.belongsToMany(Group, { through: GroupMember });
+GroupMember.belongsTo(User, { foreignKey: 'userId' });
+Group.belongsToMany(User, { through: GroupMember });
+
+Group.hasMany(GroupMessage);
+GroupMessage.belongsTo(Group);
+
+User.hasMany(GroupMessage, { foreignKey: 'senderId' });
+GroupMessage.belongsTo(User, { foreignKey: 'senderId' });
+
 // User.belongsToMany(Conversation, { through: Participant, foreignKey: 'userIds' });
 Conversation.belongsToMany(User, { through: Participant, foreignKey: 'conversationId' });
 Conversation.hasMany(Message);
@@ -64,7 +77,6 @@ Message.belongsTo(User, { foreignKey: 'receiverId', as: 'receiver' });
 //for socket
 const http = require("http");
 const server = http.createServer(app);
-
 const io = new Server(server, {
   cors: {
     origin: "http://localhost:3000",
@@ -75,9 +87,7 @@ const io = new Server(server, {
 
 //for socket
 io.on("connection", async (socket) => {
-  // console.log("????????", JSON.stringify(socket.handshake.query));
   const user_id = socket.handshake.query.user_id
-
   const socket_id = socket.id
 
   console.log(`????????????????????user connected is ${user_id} and ${socket_id}`);
@@ -91,7 +101,6 @@ io.on("connection", async (socket) => {
   }
 
  //socket event listeners
-
   socket.on("friend_request", async (data) => {
     console.log(data);
 
@@ -196,11 +205,11 @@ io.on("connection", async (socket) => {
       GROUP BY m2.\`receiverId\`
       )
     `, {
-      replacements: { receiverIds, senderId: user_id }, // Pass the array of receiver IDs and the sender ID as replacements
-      type: sequelize.QueryTypes.SELECT, // Specify the query type as SELECT
+      replacements: { receiverIds, senderId: user_id }, 
+      type: sequelize.QueryTypes.SELECT, 
     });
 
-    console.log("this is friends deatails",friendsDetails);
+    // console.log("this is friends deatails",friendsDetails);
     //get all conversation of user of uder_id
     //inside participents in onetoonemessages table get all the things where participents is user_id and even the names of all participenst where the user_id is linked
     // get user firstname last name id email status
@@ -295,6 +304,60 @@ io.on("connection", async (socket) => {
       message: msg,
     })
 
+  })
+
+  socket.on("create_group", async(data)=>{
+    // console.log(data);
+
+    const createdGroup = await Group.create({
+      name: data.groupName
+    })
+    
+    const selectedMembers = data.selectedMembers.map((member)=>{
+      return {
+        groupId: createdGroup.id,
+        userId: member.id
+      }
+    })
+    selectedMembers.push({
+      isAdmin: true,
+      groupId: createdGroup.id,
+      userId: parseInt(user_id)
+    })
+
+    const addedMembers = await GroupMember.bulkCreate(selectedMembers)
+    // console.log(addedMembers);
+
+    const groupMembers = await GroupMember.findAll({
+      where: {
+        groupId: createdGroup.id
+      },
+      include: [
+        {
+          model: User,
+          attributes: ["socket_id"]
+        }
+      ]
+    })
+    const list = groupMembers.map((grp)=>{
+      return{
+        id: grp.userId,
+        socket: grp.user.socket_id
+      }
+    });
+    // console.log(list);
+    list.forEach((li)=>{
+      if(li.id === parseInt(user_id)){
+        io.to(li.socket).emit("group_created",{
+          message: `${data.groupName} group created!`
+        })
+      }
+      else{
+        io.to(li.socket).emit("added_to_group",{
+          message: `You were added to ${data.groupName} group!`
+        })
+      }
+    })
   })
 
   socket.on("end",  async (data) => {

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Autocomplete,
   Box,
@@ -23,14 +23,73 @@ import { SimpleBarStyle } from "./Scrollbar";
 import { Search, SearchIconWrapper, StyledInputBase } from "./search";
 import ChatElement from "./ChatElement";
 import useResponsive from "../hooks/useResponsive";
+import { useDispatch, useSelector } from "react-redux";
+import { CreateGroup } from "../redux/slices/conversation";
+import { socket } from "../socket";
+import { getFriends } from "../redux/slices/app";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const MEMBERS = ["member1", "member2", "member3"]
+const MEMBERS = [
+  { title: "The Shawshank Redemption", year: 1994, },
+  { title: "The Godfather", year: 1972 },
+  { title: "The Godfather: Part II", year: 1974 },
+  { title: 'The Dark Knight', year: 2008 },
+  { title: '12 Angry Men', year: 1957 },
+  { title: "Schindler's List", year: 1993 },
+  { title: 'Pulp Fiction', year: 1994 },
+  {
+    title: 'The Lord of the Rings: The Return of the King',
+    year: 2003,
+  },
+  { title: 'The Good, the Bad and the Ugly', year: 1966 },
+  { title: 'Fight Club', year: 1999 },
+  {
+    title: 'The Lord of the Rings: The Fellowship of the Ring',
+    year: 2001,
+  },
+  {
+    title: 'Star Wars: Episode V - The Empire Strikes Back',
+    year: 1980,
+  },
+  { title: 'Forrest Gump', year: 1994 },
+  { title: 'Inception', year: 2010 },
+  {
+    title: 'The Lord of the Rings: The Two Towers',
+    year: 2002,
+  },
+  { title: "One Flew Over the Cuckoo's Nest", year: 1975 },
+  { title: 'Goodfellas', year: 1990 },
+  { title: 'The Matrix', year: 1999 },
+  { title: 'Seven Samurai', year: 1954 },
+  {
+    title: 'Star Wars: Episode IV - A New Hope',
+    year: 1977,
+  },
+];
 
 const CreateGroupDialog = ({ open, handleClose }) => {
+  const dispatch = useDispatch();
+  const [groupName, setGroupName] = useState("");
+  const [selectedMembers, setSelectedMembers] = useState([]);
+  const user_id = window.localStorage.getItem("user_id")
+
+  useEffect(()=>{
+    dispatch(getFriends());
+  },[])
+
+  const { friends } = useSelector((state) => state.app);
+  // console.log(friends);
+
+  const handleSubmit = () => {
+    // console.log("Group Name:", groupName);
+    // console.log("Selected Members:", selectedMembers);
+    socket.emit("create_group", {groupName, selectedMembers, user_id: parseInt(user_id)})
+    handleClose();
+  };
+
   return (
     <Dialog
       open={open}
@@ -42,23 +101,25 @@ const CreateGroupDialog = ({ open, handleClose }) => {
       <DialogTitle>Create Group</DialogTitle>
       <DialogContent>
         <DialogContentText id="alert-dialog-slide-description">
-          <Stack mt={2} spacing={3} sx={{width: 500}}>
-            <Typography variant="body2">          
+          <Stack mt={2} spacing={3} sx={{ width: 500 }}>
+            <Typography variant="body2">
               Enter the group name and the members
-              </Typography>
+            </Typography>
             <TextField
               required
               id="groupname"
               label="Group Name"
               variant="outlined"
+              onChange={(e) => setGroupName(e.target.value)}
             />
+        
             <Autocomplete
               multiple
               id="tags-outlined"
-              options={MEMBERS}
-              getOptionLabel={(option) => option}
-              // defaultValue={[top100Films[13]]}
+              options={friends}
+              getOptionLabel={(option) => `${option.firstName} ${option.lastName}`}
               filterSelectedOptions
+              onChange={(event, newValue) => setSelectedMembers(newValue)}
               renderInput={(params) => (
                 <TextField
                   {...params}
@@ -72,7 +133,9 @@ const CreateGroupDialog = ({ open, handleClose }) => {
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Close</Button>
-        <Button type="submit" onClick={handleClose} variant="contained">Create</Button>
+        <Button type="submit" onClick={handleSubmit} variant="contained">
+          Create
+        </Button>
       </DialogActions>
     </Dialog>
   );

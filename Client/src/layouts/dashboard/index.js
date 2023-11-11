@@ -73,7 +73,14 @@ const DashboardLayout = () => {
           }))
         }
       })
-      
+
+      socket.on("group_created",(data)=>{
+        dispatch(showSnackbar({severity: "success", message: data.message}))
+      })
+
+      socket.on("added_to_group",(data)=>{
+        dispatch(showSnackbar({severity: "success", message: data.message}))
+      })
     }
 
     return () =>{

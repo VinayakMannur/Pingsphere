@@ -4,11 +4,12 @@ import { Box, Stack, Typography } from "@mui/material";
 import Conversation from "../../components/conversation";
 import { useTheme } from "@mui/material/styles";
 import Contact from "../../components/Contact";
-import { useSelector } from "react-redux";
+import {  useSelector } from "react-redux";
 import SharedMessage from "../../components/SharedMessage";
 import StarredMessage from "../../components/StarredMessages";
 import useResponsive from "../../hooks/useResponsive";
 import NoChatSVG from "../../assets/Illustration/NoChat"
+
 
 const GeneralApp = () => {
   const theme = useTheme();
