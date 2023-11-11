@@ -11,6 +11,7 @@ import Friends from "./Friends";
 import { socket } from "../socket";
 import { useSelector, useDispatch } from "react-redux";
 import { FetchDirectConversation } from "../redux/slices/conversation";
+import { SelectConversation } from "../redux/slices/app";
 
 const Chatss = () => {
   const theme = useTheme();
@@ -26,6 +27,7 @@ const Chatss = () => {
   );
     console.log(conversations);
   useEffect(() => {
+    dispatch(SelectConversation())
     socket.emit("get_direct_conversations", { user_id }, (data) => {
       //data is list of existing conversations
       console.log(data);

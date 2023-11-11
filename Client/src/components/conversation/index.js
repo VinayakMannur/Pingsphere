@@ -27,11 +27,14 @@ const Conversation = () => {
   // console.log("scroll", scroll);
   useLayoutEffect(() => {
     scrollToBottom();
-    socket.emit("get_direct_conversations", { user_id }, (data) => {
-      //data is list of existing conversations
-      console.log(data);
-      dispatch(FetchDirectConversation({data}))
-    });
+    if(chat_type === "individual"){
+      socket.emit("get_direct_conversations", { user_id }, (data) => {
+        //data is list of existing conversations
+        console.log(data);
+        dispatch(FetchDirectConversation({data}))
+      });
+    }
+    
     console.log('runnned');
   }, [current_conversation, grpConversation]);
 

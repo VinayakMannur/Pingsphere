@@ -391,7 +391,7 @@ io.on("connection", async (socket) => {
       include: [
         { 
           model: User,
-          attributes: ["firstName", "lastName"]
+          attributes: ["id","firstName", "lastName"]
         }
       ]
     })

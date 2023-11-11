@@ -12,6 +12,7 @@ import {
 import { useTheme } from "@mui/material/styles";
 import { DotsThreeVertical, DownloadSimple, Image } from "phosphor-react";
 import { Message_options } from "../../data";
+import { useSelector } from "react-redux";
 
 const DocMsg = ({ el, menu, idx }) => {
   const theme = useTheme();
@@ -203,29 +204,65 @@ const MediaMsg = ({ el, menu, idx }) => {
 
 const TextMsg = ({ el, menu, idx }) => {
   const theme = useTheme();
+  const { chat_type } = useSelector((state) => state.app);
+  const user_id = window.localStorage.getItem("user_id");
   return (
     <Stack
       key={idx}
       direction={"row"}
       justifyContent={el.incoming ? "start" : "end"}
     >
-      <Box
-        p={1}
-        sx={{
-          backgroundColor: el.incoming
-            ? theme.palette.background.default
-            : theme.palette.primary.main,
-          borderRadius: 1,
-          width: "max-content",
-        }}
-      >
-        <Typography
-          variant="body2"
-          color={el.incoming ? theme.palette.text : "#fff"}
+      {chat_type === "group" ? (
+        <Box
+          pb={1}
+          px={1}
+          pt={el.user_id !== parseInt(user_id)?0:1}
+          sx={{
+            backgroundColor: el.incoming
+              ? theme.palette.background.default
+              : theme.palette.primary.main,
+            borderRadius: 1,
+            width: "max-content",
+          }}
         >
-          {el.message}
-        </Typography>
-      </Box>
+          {el.user_id !== parseInt(user_id) ? (
+            <Typography
+              variant="caption"
+              sx={{ fontSize: "9px" }}
+              color={el.incoming ? theme.palette.text : "#fff"}
+            >
+              {`~:${el.name}`}
+            </Typography>
+          ) : (
+            <></>
+          )}
+          <Typography
+            variant="body2"
+            color={el.incoming ? theme.palette.text : "#fff"}
+          >
+            {el.message}
+          </Typography>
+        </Box>
+      ) : (
+        <Box
+          p={1}
+          sx={{
+            backgroundColor: el.incoming
+              ? theme.palette.background.default
+              : theme.palette.primary.main,
+            borderRadius: 1,
+            width: "max-content",
+          }}
+        >
+          <Typography
+            variant="body2"
+            color={el.incoming ? theme.palette.text : "#fff"}
+          >
+            {el.message}
+          </Typography>
+        </Box>
+      )}
+
       {menu && <MessageOptions />}
     </Stack>
   );

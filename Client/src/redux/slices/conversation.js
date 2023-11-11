@@ -111,6 +111,8 @@ const slice = createSlice({
       const chat_history = action.payload.map((el) => {
         return {
           id: el.id,
+          user_id: el.user.id,
+          name: `${el.user.firstName} ${el.user.lastName}`,
           type: "msg",
           message: el.text,
           outgoing: el.senderId === parseInt(user_id) ? true: false,
