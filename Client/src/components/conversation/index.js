@@ -13,6 +13,8 @@ const Conversation = () => {
   const user_id = window.localStorage.getItem("user_id")
 
   const {current_conversation} = useSelector((state)=> state.conversation.direct_chat)
+  const {grpConversation} = useSelector((state)=> state.conversation.group_chat)
+  const {chat_type} = useSelector((state)=>state.app)
 
   const scrollToBottom = () => {
     if (scrollContainerRef.current) {
@@ -31,7 +33,7 @@ const Conversation = () => {
       dispatch(FetchDirectConversation({data}))
     });
     console.log('runnned');
-  }, [current_conversation]);
+  }, [current_conversation, grpConversation]);
 
   return (
     <Stack height={"100%"} maxHeight={"100vh"} width={"auto"}>

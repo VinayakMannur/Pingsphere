@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { SelectConversation, UpdateConversation } from "../redux/slices/app";
 import {
   EmptyCurrentConversation,
+  FetchGrpChats,
   UpdateConversationId,
   UpdateGrpNameAdmin,
 } from "../redux/slices/conversation";
@@ -45,9 +46,13 @@ const ChatElement = ({
             : theme.palette.background.default,
       }}
       onClick={() => {
-        // console.log(id, user_id);
         if(chat_type === "group"){
+          console.log("get_group_messages");
           dispatch(UpdateGrpNameAdmin({groupId: id, groupName: name, groupAdmin: "TODO"}))
+          socket.emit("get_group_messages",{id}, (data)=>{
+            // console.log(data);
+            dispatch(FetchGrpChats(data))
+          })
         }
         else{
           dispatch(

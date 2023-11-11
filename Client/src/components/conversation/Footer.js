@@ -179,7 +179,7 @@ const Footer = () => {
             <IconButton onClick={()=>{
               // console.log(to_user);
               if(chat_type === "group"){
-                // console.log("loging grp message", value);
+                console.log("loging grp message", value);
                 dispatch(PushToGrpConversation({
                   id: 1,
                   type: "msg",

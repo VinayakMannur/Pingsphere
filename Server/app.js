@@ -381,6 +381,24 @@ io.on("connection", async (socket) => {
     callback(gropInfo)
   })
 
+  socket.on("get_group_messages", async ({id}, callback)=>{
+    console.log("get_group_messages",id);
+    
+    const grpMessages = await GroupMessage.findAll({
+      where: {
+        groupId: id
+      },
+      include: [
+        { 
+          model: User,
+          attributes: ["firstName", "lastName"]
+        }
+      ]
+    })
+    // console.log(grpMessages);
+    callback(grpMessages)
+  })
+
   socket.on("grp_message", async(data)=>{
     // console.log(data);
     const grpMessage = await GroupMessage.create({
@@ -388,7 +406,8 @@ io.on("connection", async (socket) => {
       groupId: data.groupId,
       senderId: data.from
     })
-    console.log(`User ${socket.id} sent a message to group ${data.groupId}`);
+    socket.join(data.groupId)
+    // console.log(`User ${socket.id} sent a message to group ${data.groupId}`);
     io.to(data.groupId).emit("message_from_group",{
       msg: "message_from_group"
     })

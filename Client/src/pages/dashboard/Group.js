@@ -15,6 +15,7 @@ const Group = () => {
 
   const user_id = window.localStorage.getItem("user_id");
   const { sidebar, chat_type } = useSelector((store) => store.app);
+  const {groupId} = useSelector((state)=> state.conversation.group_chat)
 
   useEffect(() => {
     dispatch(UpdateConversation());
@@ -41,7 +42,7 @@ const Group = () => {
                 : theme.palette.background.default,
           }}
         >
-          {chat_type === "group" ? (
+          {groupId !== null &&chat_type === "group" ? (
             <Conversation />
           ) : (
             <Stack

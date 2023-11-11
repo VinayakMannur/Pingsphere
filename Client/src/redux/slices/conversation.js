@@ -19,7 +19,7 @@ const initialState = {
     groupId: null,
     groupName: '',
     groupAdmin: '',
-    conversation: [],
+    grpConversation: [],
   },
 };
 
@@ -70,7 +70,7 @@ const slice = createSlice({
       state.direct_chat.current_conversation = chat_history;
     },
     addDirectMessage(state, action){
-      console.log("came in adding direct message", action.payload.message);
+      // console.log("came in adding direct message", action.payload.message);
       state.direct_chat.current_conversation.push(action.payload.message)
     },
     updateConversationId(state, action) {
@@ -103,7 +103,21 @@ const slice = createSlice({
       state.group_chat.groupAdmin = action.payload.groupAdmin
     },
     pushToGrpConversation(state, action){
-      state.group_chat.conversation = action.payload
+      console.log(action.payload);
+      state.group_chat.grpConversation.push(action.payload)
+    },
+    fetchGrpChats(state, action){
+      console.log(action.payload);
+      const chat_history = action.payload.map((el) => {
+        return {
+          id: el.id,
+          type: "msg",
+          message: el.text,
+          outgoing: el.senderId === parseInt(user_id) ? true: false,
+          incoming: el.senderId !== parseInt(user_id) ? true: false,
+        };
+      });
+      state.group_chat.grpConversation = chat_history
     }
   },
 });
@@ -171,9 +185,15 @@ export const UpdateGrpNameAdmin = ({groupId, groupName, groupAdmin}) => {
   }
 }
 
-export const PushToGrpConversation = ({msg}) =>{
+export const PushToGrpConversation = (data) =>{
   return async (dispatch, getState) => {
-    dispatch(slice.actions.pushToGrpConversation({msg}))
+    dispatch(slice.actions.pushToGrpConversation(data))
+  }
+}
+
+export const FetchGrpChats = (data) =>{
+  return async (dispatch, getState) => {
+    dispatch(slice.actions.fetchGrpChats(data))
   }
 }
 

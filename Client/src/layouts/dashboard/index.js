@@ -6,14 +6,14 @@ import { useSelector } from "react-redux";
 import { connectSocket, socket } from "../../socket";
 import { SelectConversation, showSnackbar } from "../../redux/slices/app";
 import { useDispatch } from "react-redux";
-import { AddDirectMessage, FetchCurrentConversation, UpdateConversationId } from "../../redux/slices/conversation";
+import { AddDirectMessage, FetchCurrentConversation, FetchGrpChats, UpdateConversationId } from "../../redux/slices/conversation";
 
 const DashboardLayout = () => {
   const dispatch = useDispatch()
 
   const {isLoggedIn} = useSelector((state) => state.auth)
   const {conversationId} = useSelector((state)=> state.conversation.direct_chat)
-
+  const {groupId} = useSelector((state)=>state.conversation.group_chat)
   const user_id = window.localStorage.getItem("user_id")
 
   useEffect(()=>{
@@ -81,9 +81,14 @@ const DashboardLayout = () => {
       socket.on("added_to_group",(data)=>{
         dispatch(showSnackbar({severity: "success", message: data.message}))
       })
-
+      
       socket.on("message_from_group", (data)=>{
         dispatch(showSnackbar({severity: "success", message: data.msg}))
+        
+        socket.emit("get_group_messages",{id: groupId}, (data)=>{
+          // console.log(data);
+          dispatch(FetchGrpChats(data))
+        })
       })
     }
 
