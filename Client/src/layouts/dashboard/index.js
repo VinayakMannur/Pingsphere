@@ -92,6 +92,10 @@ const DashboardLayout = () => {
           dispatch(FetchGrpChats(data.grpMessages))
         })
       })
+
+      socket.on("restrict", (data)=>{
+        console.log("restrict");
+      })
     }
 
     return () =>{

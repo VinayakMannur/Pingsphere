@@ -15,10 +15,12 @@ import {
   Button,
   TextField,
   Slide,
+  Tooltip,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import {
   CaretDown,
+  LockLaminated,
   MagnifyingGlass,
   Phone,
   Plus,
@@ -29,69 +31,31 @@ import StyledBadge from "../StyleBadge";
 import { ToggleSidebar } from "../../redux/slices/app";
 import { useDispatch, useSelector } from "react-redux";
 import { socket } from "../../socket";
-import { FriendsNotInGrp } from "../../redux/slices/conversation";
+import { FriendsNotInGrp, RestrictMembers } from "../../redux/slices/conversation";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const MEMBERS = [
-  { title: "The Shawshank Redemption", year: 1994, },
-  { title: "The Godfather", year: 1972 },
-  { title: "The Godfather: Part II", year: 1974 },
-  { title: 'The Dark Knight', year: 2008 },
-  { title: '12 Angry Men', year: 1957 },
-  { title: "Schindler's List", year: 1993 },
-  { title: 'Pulp Fiction', year: 1994 },
-  {
-    title: 'The Lord of the Rings: The Return of the King',
-    year: 2003,
-  },
-  { title: 'The Good, the Bad and the Ugly', year: 1966 },
-  { title: 'Fight Club', year: 1999 },
-  {
-    title: 'The Lord of the Rings: The Fellowship of the Ring',
-    year: 2001,
-  },
-  {
-    title: 'Star Wars: Episode V - The Empire Strikes Back',
-    year: 1980,
-  },
-  { title: 'Forrest Gump', year: 1994 },
-  { title: 'Inception', year: 2010 },
-  {
-    title: 'The Lord of the Rings: The Two Towers',
-    year: 2002,
-  },
-  { title: "One Flew Over the Cuckoo's Nest", year: 1975 },
-  { title: 'Goodfellas', year: 1990 },
-  { title: 'The Matrix', year: 1999 },
-  { title: 'Seven Samurai', year: 1954 },
-  {
-    title: 'Star Wars: Episode IV - A New Hope',
-    year: 1977,
-  },
-];
-
 const CreateGroupDialog = ({ open, handleClose }) => {
   const dispatch = useDispatch();
   const [selectedMembers, setSelectedMembers] = useState([]);
-  const user_id = window.localStorage.getItem("user_id");
-  const {groupId, groupName} = useSelector((state)=>state.conversation.group_chat)
+  const { groupId, groupName } = useSelector(
+    (state) => state.conversation.group_chat
+  );
 
- 
-  useEffect(()=>{
-    socket.emit("get_friends_not_paart_of_group",{groupId},(data)=>{
+  useEffect(() => {
+    socket.emit("get_friends_not_paart_of_group", { groupId }, (data) => {
       // console.log(data);
-      dispatch(FriendsNotInGrp(data))
-    })
-  },[])
+      dispatch(FriendsNotInGrp(data));
+    });
+  }, []);
 
-  const {friendsNGrp} = useSelector((state)=>state.conversation.group_chat)
+  const { friendsNGrp } = useSelector((state) => state.conversation.group_chat);
 
   const handleSubmit = () => {
     // console.log("Selected Members:", selectedMembers);
-    socket.emit("add_to_group", {groupName, selectedMembers, groupId})
+    socket.emit("add_to_group", { groupName, selectedMembers, groupId });
     handleClose();
   };
 
@@ -141,6 +105,10 @@ const Header = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const [openCreateGroup, setOpenCreateGroup] = useState(false);
+  const user_id = window.localStorage.getItem("user_id");
+  const { groupId } = useSelector(
+    (state) => state.conversation.group_chat
+  );
 
   const handleCloseCreateGroupDialog = () => {
     setOpenCreateGroup(false);
@@ -150,7 +118,7 @@ const Header = () => {
     (state) => state.conversation.direct_chat
   );
 
-  const { groupName, groupAdmin } = useSelector(
+  const { groupName, groupAdmin, groupAdminId } = useSelector(
     (state) => state.conversation.group_chat
   );
   const { chat_type } = useSelector((state) => state.app);
@@ -208,23 +176,40 @@ const Header = () => {
           </Stack>
         </Stack>
         <Stack alignItems={"center"} direction={"row"} spacing={2}>
-          {chat_type === "group" ? (
-            <IconButton
-              onClick={() => {
-                setOpenCreateGroup(true);
-              }}
-            >
-              <Plus size={20} style={{ color: theme.palette.primary.main }} />
-            </IconButton>
+          {chat_type === "group" && parseInt(user_id) === groupAdminId ? (
+            <>
+              <Tooltip title="Add users to group">
+                <IconButton
+                  onClick={() => {
+                    setOpenCreateGroup(true);
+                  }}
+                >
+                  <Plus
+                    size={20}
+                    style={{ color: theme.palette.primary.main }}
+                  />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Restrict members from texting">
+                <IconButton onClick={()=>{
+                  // dispatch(RestrictMembers())
+                  // socket.emit("restrict_user", {groupId})
+                }}>
+                  <LockLaminated />
+                </IconButton>
+              </Tooltip>
+            </>
           ) : (
-            <IconButton>
-              <VideoCamera />
-            </IconButton>
+            <>
+              <IconButton>
+                <VideoCamera />
+              </IconButton>
+              <IconButton>
+                <Phone />
+              </IconButton>
+            </>
           )}
 
-          <IconButton>
-            <Phone />
-          </IconButton>
           <IconButton>
             <MagnifyingGlass />
           </IconButton>

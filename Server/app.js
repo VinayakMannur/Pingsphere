@@ -499,6 +499,12 @@ io.on("connection", async (socket) => {
     })
   })
 
+  // socket.on("restrict_user", async(groupId)=>{
+  //   console.log(groupId.groupId);
+  //   socket.join(groupId.groupId)
+  //   socket.emit("restrict", groupId.groupId)
+  // })
+
   socket.on("end",  async (data) => {
     if(data.user_id){
       const user = await User.update({status: "Offline"},{

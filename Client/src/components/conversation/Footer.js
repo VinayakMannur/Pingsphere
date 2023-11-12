@@ -15,7 +15,7 @@ import Picker from "@emoji-mart/react";
 import { Actions } from "../../data";
 import { useDispatch, useSelector } from "react-redux";
 import { socket } from "../../socket";
-import { PushToGrpConversation } from "../../redux/slices/conversation";
+// import { PushToGrpConversation } from "../../redux/slices/conversation";
 
 const StyledInput = styled(TextField)(({ theme }) => ({
   "& .MuiInputBase-input": {
@@ -95,16 +95,21 @@ const ChatInput = ({ inputRef, value, setValue, setOpenPicker }) => {
 };
 
 const Footer = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const theme = useTheme();
   const [openPicker, setOpenPicker] = useState(false);
   const [value, setValue] = useState("");
   const inputRef = useRef(null);
-  
+
   const user_id = window.localStorage.getItem("user_id");
+  const { restrict, groupAdminId } = useSelector(
+    (state) => state.conversation.group_chat
+  );
   const { chat_type } = useSelector((state) => state.app);
-  const { groupId } = useSelector((state)=> state.conversation.group_chat)
-  const {conversationId, to_user} = useSelector((state)=> state.conversation.direct_chat)
+  const { groupId } = useSelector((state) => state.conversation.group_chat);
+  const { conversationId, to_user } = useSelector(
+    (state) => state.conversation.direct_chat
+  );
 
   function handleEmojiClick(emoji) {
     const input = inputRef.current;
@@ -125,7 +130,7 @@ const Footer = () => {
   }
 
   return (
-    <Box  
+    <Box
       p={2}
       sx={{
         width: "100%",
@@ -151,17 +156,26 @@ const Footer = () => {
             <Picker
               theme={theme.palette.mode}
               data={data}
-              onEmojiSelect={(emoji)=>{
-                handleEmojiClick(emoji.native)
+              onEmojiSelect={(emoji) => {
+                handleEmojiClick(emoji.native);
               }}
             />
           </Box>
-          <ChatInput 
-            inputRef={inputRef}
-            value={value}
-            setValue={setValue}
-            setOpenPicker={setOpenPicker} 
-          />
+          {groupAdminId === parseInt(user_id) || !restrict ? (
+            <ChatInput
+              inputRef={inputRef}
+              value={value}
+              setValue={setValue}
+              setOpenPicker={setOpenPicker}
+            />
+          ) : (
+            <StyledInput
+              disabled
+              fullWidth
+              placeholder="Onlu admin can send a message..."
+              variant="filled"
+            />
+          )}
         </Stack>
         <Box
           sx={{
@@ -176,33 +190,35 @@ const Footer = () => {
             alignItems={"center"}
             justifyContent={"center"}
           >
-            <IconButton onClick={()=>{
-              // console.log(to_user);
-              if(chat_type === "group"){
-                console.log("loging grp message", value);
-                dispatch(PushToGrpConversation({
-                  id: 1,
-                  type: "msg",
-                  message: value,
-                  outgoing: true,
-                  incoming: false
-                }))
-                socket.emit("grp_message",{
-                  message: value,
-                  groupId,
-                  from: parseInt(user_id),
-                })
-                setValue('')
-              }else{
-                socket.emit("text_message",{
-                  message: value,
-                  conversationId: conversationId,
-                  from: parseInt(user_id),
-                  to: to_user
-                })
-                setValue('')
-              }
-            }}>
+            <IconButton
+              onClick={() => {
+                // console.log(to_user);
+                if (chat_type === "group") {
+                  console.log("loging grp message", value);
+                  // dispatch(PushToGrpConversation({
+                  //   id: 1,
+                  //   type: "msg",
+                  //   message: value,
+                  //   outgoing: true,
+                  //   incoming: false
+                  // }))
+                  socket.emit("grp_message", {
+                    message: value,
+                    groupId,
+                    from: parseInt(user_id),
+                  });
+                  setValue("");
+                } else {
+                  socket.emit("text_message", {
+                    message: value,
+                    conversationId: conversationId,
+                    from: parseInt(user_id),
+                    to: to_user,
+                  });
+                  setValue("");
+                }
+              }}
+            >
               <PaperPlaneTilt color="#fff" />
             </IconButton>
           </Stack>

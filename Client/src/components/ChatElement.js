@@ -51,7 +51,8 @@ const ChatElement = ({
           socket.emit("get_group_messages",{id}, (data)=>{
             // console.log(data);
             const adminName = `${data.grpAdmin.user.firstName} ${data.grpAdmin.user.lastName}`
-            dispatch(UpdateGrpNameAdmin({groupId: id, groupName: name, groupAdmin: adminName}))
+            const groupAdminId = data.grpAdmin.user.id
+            dispatch(UpdateGrpNameAdmin({groupId: id, groupName: name, groupAdmin: adminName, groupAdminId: groupAdminId}))
             dispatch(FetchGrpChats(data.grpMessages))
           })
         }

@@ -19,8 +19,10 @@ const initialState = {
     groupId: null,
     groupName: '',
     groupAdmin: '',
+    groupAdminId: null,
     grpConversation: [],
     friendsNGrp: [],
+    restrict: false,
   },
 };
 
@@ -102,6 +104,7 @@ const slice = createSlice({
       state.group_chat.groupId = action.payload.groupId
       state.group_chat.groupName = action.payload.groupName
       state.group_chat.groupAdmin = action.payload.groupAdmin
+      state.group_chat.groupAdminId = action.payload.groupAdminId
     },
     pushToGrpConversation(state, action){
       console.log(action.payload);
@@ -125,6 +128,9 @@ const slice = createSlice({
     friendsNotInGrp(state, action){
       // console.log(action.payload);
       state.group_chat.friendsNGrp = action.payload
+    },
+    restrictMembers(state, action){
+      state.group_chat.restrict = !state.group_chat.restrict
     },
   },
 });
@@ -186,9 +192,9 @@ export const UpdateGroupList = (data) =>{
   };
 }
 
-export const UpdateGrpNameAdmin = ({groupId, groupName, groupAdmin}) => {
+export const UpdateGrpNameAdmin = ({groupId, groupName, groupAdmin, groupAdminId}) => {
   return async (dispatch, getState)=>{
-    dispatch(slice.actions.updateGrpNameAdmin({groupId, groupName, groupAdmin}))
+    dispatch(slice.actions.updateGrpNameAdmin({groupId, groupName, groupAdmin, groupAdminId}))
   }
 }
 
@@ -207,6 +213,12 @@ export const FetchGrpChats = (data) =>{
 export const FriendsNotInGrp = (data) =>{
   return async(dispatch, getState) =>{
     dispatch(slice.actions.friendsNotInGrp(data))
+  }
+}
+
+export function RestrictMembers (){
+  return async(dispatch, getState)=>{
+    dispatch(slice.actions.restrictMembers())
   }
 }
 
