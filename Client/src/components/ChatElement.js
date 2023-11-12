@@ -48,10 +48,11 @@ const ChatElement = ({
       onClick={() => {
         if(chat_type === "group"){
           console.log("get_group_messages");
-          dispatch(UpdateGrpNameAdmin({groupId: id, groupName: name, groupAdmin: "TODO"}))
           socket.emit("get_group_messages",{id}, (data)=>{
             // console.log(data);
-            dispatch(FetchGrpChats(data))
+            const adminName = `${data.grpAdmin.user.firstName} ${data.grpAdmin.user.lastName}`
+            dispatch(UpdateGrpNameAdmin({groupId: id, groupName: name, groupAdmin: adminName}))
+            dispatch(FetchGrpChats(data.grpMessages))
           })
         }
         else{

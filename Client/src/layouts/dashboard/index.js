@@ -63,6 +63,7 @@ const DashboardLayout = () => {
         const text = data.message.text
         const senderId = parseInt(data.message.senderId)
         if(parseInt(conversationId) === parseInt(data.conversationId)){
+          console.log("severity: \\message: data.snack}");
           dispatch(showSnackbar({severity: "success", message: data.snack}))
           dispatch(AddDirectMessage({
             id: id,
@@ -79,6 +80,7 @@ const DashboardLayout = () => {
       })
 
       socket.on("added_to_group",(data)=>{
+        // console.log("added_to_group", data);
         dispatch(showSnackbar({severity: "success", message: data.message}))
       })
       
@@ -86,8 +88,8 @@ const DashboardLayout = () => {
         dispatch(showSnackbar({severity: "success", message: data.msg}))
         
         socket.emit("get_group_messages",{id: groupId}, (data)=>{
-          // console.log(data);
-          dispatch(FetchGrpChats(data))
+          console.log(data);
+          dispatch(FetchGrpChats(data.grpMessages))
         })
       })
     }

@@ -76,6 +76,7 @@ Message.belongsTo(User, { foreignKey: 'receiverId', as: 'receiver' });
 
 //for socket
 const http = require("http");
+const { log } = require("console");
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
@@ -361,6 +362,34 @@ io.on("connection", async (socket) => {
     })
   })
 
+  socket.on("add_to_group", async(data)=>{
+    // console.log("add_to_group",data.groupName);
+    socket.join(data.groupId)
+    const selectedMembers = data.selectedMembers.map((member)=>{
+      return {
+        groupId: data.groupId,
+        userId: member.id
+      }
+    })
+    const addedMembers = await GroupMember.bulkCreate(selectedMembers)
+
+    const list = data.selectedMembers.map((member)=>member.id)
+    // console.log(list);
+
+    const socketIds = await User.findAll({
+      where:{
+        id: list
+      },
+      attributes: ["socket_id"]
+    })
+
+    socketIds.forEach((li)=>{
+      io.to(li.socket_id).emit("added_to_group",{
+        message: `You were added to ${data.groupName} group!`
+      })
+    })
+  })
+
   socket.on("get_group_list", async ({user_id}, callback)=>{
     const userId = parseInt(user_id)
 
@@ -381,6 +410,51 @@ io.on("connection", async (socket) => {
     callback(gropInfo)
   })
 
+  socket.on("get_friends_not_paart_of_group", async({groupId}, callback)=>{
+    console.log("get_friends_not_paart_of_group",groupId);
+
+    const adminUser = await GroupMember.findOne({
+      where: {
+        isAdmin: true,
+        groupId: groupId
+      }
+    })
+
+    if (!adminUser) {
+      throw new Error('Admin user not found for the group.');
+    }
+
+    const adminUserId = adminUser.userId;
+
+    const groupMembers = await GroupMember.findAll({
+      where: { 
+        groupId,
+        isAdmin: false
+      },
+    });
+
+    const adminFriends = await User.findByPk(adminUserId,{
+      attributes: ["friends"]
+    })
+
+    const adminUserFriends = adminFriends.friends || [];
+
+    const friendsNotInGroup = adminUserFriends.filter(
+      (friendId) =>
+        !groupMembers.some((member) => member.userId === friendId)
+    );
+    // console.log(friendsNotInGroup);
+
+    const friendsNGrp = await User.findAll({
+      where: {
+        id: friendsNotInGroup
+      },
+      attributes: ["id","firstName", "lastName"]
+    })
+    // console.log(friendsNGrp);
+    callback(friendsNGrp)
+  })
+
   socket.on("get_group_messages", async ({id}, callback)=>{
     console.log("get_group_messages",id);
     
@@ -395,8 +469,20 @@ io.on("connection", async (socket) => {
         }
       ]
     })
+    const grpAdmin = await GroupMember.findOne({
+      where: {
+        groupId: id,
+        isAdmin: true
+      },
+      include: [
+        { 
+          model: User,
+          attributes: ["id","firstName", "lastName"]
+        }
+      ]
+    })
     // console.log(grpMessages);
-    callback(grpMessages)
+    callback({grpMessages, grpAdmin})
   })
 
   socket.on("grp_message", async(data)=>{

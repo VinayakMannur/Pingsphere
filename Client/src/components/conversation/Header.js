@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Stack,
@@ -6,17 +6,145 @@ import {
   Typography,
   IconButton,
   Divider,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  Autocomplete,
+  DialogActions,
+  Button,
+  TextField,
+  Slide,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import { CaretDown, MagnifyingGlass, Phone, VideoCamera } from "phosphor-react";
+import {
+  CaretDown,
+  MagnifyingGlass,
+  Phone,
+  Plus,
+  VideoCamera,
+} from "phosphor-react";
 import { faker } from "@faker-js/faker";
 import StyledBadge from "../StyleBadge";
 import { ToggleSidebar } from "../../redux/slices/app";
 import { useDispatch, useSelector } from "react-redux";
+import { socket } from "../../socket";
+import { FriendsNotInGrp } from "../../redux/slices/conversation";
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
+
+const MEMBERS = [
+  { title: "The Shawshank Redemption", year: 1994, },
+  { title: "The Godfather", year: 1972 },
+  { title: "The Godfather: Part II", year: 1974 },
+  { title: 'The Dark Knight', year: 2008 },
+  { title: '12 Angry Men', year: 1957 },
+  { title: "Schindler's List", year: 1993 },
+  { title: 'Pulp Fiction', year: 1994 },
+  {
+    title: 'The Lord of the Rings: The Return of the King',
+    year: 2003,
+  },
+  { title: 'The Good, the Bad and the Ugly', year: 1966 },
+  { title: 'Fight Club', year: 1999 },
+  {
+    title: 'The Lord of the Rings: The Fellowship of the Ring',
+    year: 2001,
+  },
+  {
+    title: 'Star Wars: Episode V - The Empire Strikes Back',
+    year: 1980,
+  },
+  { title: 'Forrest Gump', year: 1994 },
+  { title: 'Inception', year: 2010 },
+  {
+    title: 'The Lord of the Rings: The Two Towers',
+    year: 2002,
+  },
+  { title: "One Flew Over the Cuckoo's Nest", year: 1975 },
+  { title: 'Goodfellas', year: 1990 },
+  { title: 'The Matrix', year: 1999 },
+  { title: 'Seven Samurai', year: 1954 },
+  {
+    title: 'Star Wars: Episode IV - A New Hope',
+    year: 1977,
+  },
+];
+
+const CreateGroupDialog = ({ open, handleClose }) => {
+  const dispatch = useDispatch();
+  const [selectedMembers, setSelectedMembers] = useState([]);
+  const user_id = window.localStorage.getItem("user_id");
+  const {groupId, groupName} = useSelector((state)=>state.conversation.group_chat)
+
+ 
+  useEffect(()=>{
+    socket.emit("get_friends_not_paart_of_group",{groupId},(data)=>{
+      // console.log(data);
+      dispatch(FriendsNotInGrp(data))
+    })
+  },[])
+
+  const {friendsNGrp} = useSelector((state)=>state.conversation.group_chat)
+
+  const handleSubmit = () => {
+    // console.log("Selected Members:", selectedMembers);
+    socket.emit("add_to_group", {groupName, selectedMembers, groupId})
+    handleClose();
+  };
+
+  return (
+    <Dialog
+      open={open}
+      TransitionComponent={Transition}
+      keepMounted
+      onClose={handleClose}
+      aria-describedby="alert-dialog-slide-description"
+    >
+      <DialogTitle>Add Members to group</DialogTitle>
+      <DialogContent>
+        <DialogContentText id="alert-dialog-slide-description">
+          <Stack mt={2} spacing={3} sx={{ width: 500 }}>
+            <Autocomplete
+              multiple
+              id="tags-outlined"
+              options={friendsNGrp}
+              getOptionLabel={(option) =>
+                `${option.firstName} ${option.lastName}`
+              }
+              filterSelectedOptions
+              onChange={(event, newValue) => setSelectedMembers(newValue)}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Add Members to your group"
+                  placeholder="Add Members"
+                />
+              )}
+            />
+          </Stack>
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleClose}>Close</Button>
+        <Button type="submit" onClick={handleSubmit} variant="contained">
+          Add
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
 
 const Header = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
+  const [openCreateGroup, setOpenCreateGroup] = useState(false);
+
+  const handleCloseCreateGroupDialog = () => {
+    setOpenCreateGroup(false);
+  };
 
   const { to_user_name, to_user_status } = useSelector(
     (state) => state.conversation.direct_chat
@@ -80,9 +208,20 @@ const Header = () => {
           </Stack>
         </Stack>
         <Stack alignItems={"center"} direction={"row"} spacing={2}>
-          <IconButton>
-            <VideoCamera />
-          </IconButton>
+          {chat_type === "group" ? (
+            <IconButton
+              onClick={() => {
+                setOpenCreateGroup(true);
+              }}
+            >
+              <Plus size={20} style={{ color: theme.palette.primary.main }} />
+            </IconButton>
+          ) : (
+            <IconButton>
+              <VideoCamera />
+            </IconButton>
+          )}
+
           <IconButton>
             <Phone />
           </IconButton>
@@ -95,6 +234,12 @@ const Header = () => {
           </IconButton>
         </Stack>
       </Stack>
+      {openCreateGroup && (
+        <CreateGroupDialog
+          open={openCreateGroup}
+          handleClose={handleCloseCreateGroupDialog}
+        />
+      )}
     </Box>
   );
 };

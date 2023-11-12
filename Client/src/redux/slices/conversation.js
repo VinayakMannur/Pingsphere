@@ -20,6 +20,7 @@ const initialState = {
     groupName: '',
     groupAdmin: '',
     grpConversation: [],
+    friendsNGrp: [],
   },
 };
 
@@ -120,7 +121,11 @@ const slice = createSlice({
         };
       });
       state.group_chat.grpConversation = chat_history
-    }
+    },
+    friendsNotInGrp(state, action){
+      // console.log(action.payload);
+      state.group_chat.friendsNGrp = action.payload
+    },
   },
 });
 
@@ -196,6 +201,12 @@ export const PushToGrpConversation = (data) =>{
 export const FetchGrpChats = (data) =>{
   return async (dispatch, getState) => {
     dispatch(slice.actions.fetchGrpChats(data))
+  }
+}
+
+export const FriendsNotInGrp = (data) =>{
+  return async(dispatch, getState) =>{
+    dispatch(slice.actions.friendsNotInGrp(data))
   }
 }
 
