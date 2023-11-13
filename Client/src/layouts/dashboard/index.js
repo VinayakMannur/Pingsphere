@@ -6,7 +6,7 @@ import { useSelector } from "react-redux";
 import { connectSocket, socket } from "../../socket";
 import { SelectConversation, showSnackbar } from "../../redux/slices/app";
 import { useDispatch } from "react-redux";
-import { AddDirectMessage, FetchCurrentConversation, FetchGrpChats, UpdateConversationId } from "../../redux/slices/conversation";
+import { AddDirectMessage, EmptyGrpConversations, FetchCurrentConversation, FetchGrpChats, UpdateConversationId } from "../../redux/slices/conversation";
 
 const DashboardLayout = () => {
   const dispatch = useDispatch()
@@ -82,6 +82,11 @@ const DashboardLayout = () => {
       socket.on("added_to_group",(data)=>{
         // console.log("added_to_group", data);
         dispatch(showSnackbar({severity: "success", message: data.message}))
+      })
+
+      socket.on("removed_from_group", (data)=>{
+        dispatch(showSnackbar({severity: "success", message: data.message}))
+        dispatch(EmptyGrpConversations())
       })
       
       socket.on("message_from_group", (data)=>{

@@ -102,11 +102,10 @@ const Footer = () => {
   const inputRef = useRef(null);
 
   const user_id = window.localStorage.getItem("user_id");
-  const { restrict, groupAdminId } = useSelector(
+  const { restrict, groupAdminId, groupId } = useSelector(
     (state) => state.conversation.group_chat
   );
   const { chat_type } = useSelector((state) => state.app);
-  const { groupId } = useSelector((state) => state.conversation.group_chat);
   const { conversationId, to_user } = useSelector(
     (state) => state.conversation.direct_chat
   );
@@ -185,6 +184,7 @@ const Footer = () => {
             borderRadius: 1.5,
           }}
         >
+          {restrict? <></>:
           <Stack
             sx={{ height: "100%", width: "100%" }}
             alignItems={"center"}
@@ -222,6 +222,7 @@ const Footer = () => {
               <PaperPlaneTilt color="#fff" />
             </IconButton>
           </Stack>
+}
         </Box>
       </Stack>
     </Box>

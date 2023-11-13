@@ -24,6 +24,8 @@ import {
   MagnifyingGlass,
   Phone,
   Plus,
+  UserCircleMinus,
+  UserCirclePlus,
   VideoCamera,
 } from "phosphor-react";
 import { faker } from "@faker-js/faker";
@@ -31,7 +33,7 @@ import StyledBadge from "../StyleBadge";
 import { ToggleSidebar } from "../../redux/slices/app";
 import { useDispatch, useSelector } from "react-redux";
 import { socket } from "../../socket";
-import { FriendsNotInGrp, RestrictMembers } from "../../redux/slices/conversation";
+import { FetchFriendsInGroup, FriendsNotInGrp, RestrictMembers } from "../../redux/slices/conversation";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -101,10 +103,76 @@ const CreateGroupDialog = ({ open, handleClose }) => {
   );
 };
 
+const RemoveMembersDialog = ({ open, handleClose }) => {
+  const dispatch = useDispatch();
+  const [selectedMembers, setSelectedMembers] = useState([]);
+  const { groupId, groupName } = useSelector(
+    (state) => state.conversation.group_chat
+  );
+
+  useEffect(() => {
+    socket.emit("get_members_of_group", { groupId }, (data) => {
+      // console.log(data);
+      dispatch(FetchFriendsInGroup(data))
+    });
+  }, []);
+
+  const { friendsInGrp } = useSelector((state) => state.conversation.group_chat);
+
+
+  const handleSubmit = () => {
+    // console.log("Selected Members:", selectedMembers);
+    socket.emit("remove_from_group", { groupName, selectedMembers, groupId });
+    handleClose();
+  };
+
+  return (
+    <Dialog
+      open={open}
+      TransitionComponent={Transition}
+      keepMounted
+      onClose={handleClose}
+      aria-describedby="alert-dialog-slide-description"
+    >
+      <DialogTitle>Remove Members from group</DialogTitle>
+      <DialogContent>
+        <DialogContentText id="alert-dialog-slide-description">
+          <Stack mt={2} spacing={3} sx={{ width: 500 }}>
+            <Autocomplete
+              multiple
+              id="tags-outlined"
+              options={friendsInGrp}
+              getOptionLabel={(option) =>
+                `${option.firstName} ${option.lastName}`
+              }
+              filterSelectedOptions
+              onChange={(event, newValue) => setSelectedMembers(newValue)}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Remove Members from group"
+                  placeholder="Remove Members"
+                />
+              )}
+            />
+          </Stack>
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleClose}>Close</Button>
+        <Button type="submit" onClick={handleSubmit} variant="contained">
+          Remove
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
+
 const Header = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const [openCreateGroup, setOpenCreateGroup] = useState(false);
+  const [openRemoveMembers, setOpenRemoveMembers] = useState(false);
   const user_id = window.localStorage.getItem("user_id");
   const { groupId } = useSelector(
     (state) => state.conversation.group_chat
@@ -112,6 +180,10 @@ const Header = () => {
 
   const handleCloseCreateGroupDialog = () => {
     setOpenCreateGroup(false);
+  };
+
+  const handleCloseRemoveMembersDialog = () => {
+    setOpenRemoveMembers(false);
   };
 
   const { to_user_name, to_user_status } = useSelector(
@@ -178,24 +250,33 @@ const Header = () => {
         <Stack alignItems={"center"} direction={"row"} spacing={2}>
           {chat_type === "group" && parseInt(user_id) === groupAdminId ? (
             <>
-              <Tooltip title="Add users to group">
+              <Tooltip title="Add members to group">
                 <IconButton
                   onClick={() => {
                     setOpenCreateGroup(true);
                   }}
                 >
-                  <Plus
+                  <UserCirclePlus
                     size={20}
                     style={{ color: theme.palette.primary.main }}
                   />
                 </IconButton>
               </Tooltip>
-              <Tooltip title="Restrict members from texting">
+              {/* <Tooltip title="Restrict members from texting">
                 <IconButton onClick={()=>{
-                  // dispatch(RestrictMembers())
-                  // socket.emit("restrict_user", {groupId})
+                  dispatch(RestrictMembers())
+                  socket.emit("restrict_user", {groupId})
                 }}>
                   <LockLaminated />
+                </IconButton>
+              </Tooltip> */}
+              <Tooltip title="Remove members from group">
+                <IconButton onClick={()=>{
+                  setOpenRemoveMembers(true)
+                }}>
+                  <UserCircleMinus size={20}
+                    style={{ color: theme.palette.primary.main }}
+                  />
                 </IconButton>
               </Tooltip>
             </>
@@ -223,6 +304,12 @@ const Header = () => {
         <CreateGroupDialog
           open={openCreateGroup}
           handleClose={handleCloseCreateGroupDialog}
+        />
+      )}
+      {openRemoveMembers && (
+        <RemoveMembersDialog
+          open={openRemoveMembers}
+          handleClose={handleCloseRemoveMembersDialog}
         />
       )}
     </Box>

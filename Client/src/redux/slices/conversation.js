@@ -23,6 +23,7 @@ const initialState = {
     grpConversation: [],
     friendsNGrp: [],
     restrict: false,
+    friendsInGrp: [],
   },
 };
 
@@ -132,6 +133,16 @@ const slice = createSlice({
     restrictMembers(state, action){
       state.group_chat.restrict = !state.group_chat.restrict
     },
+    fetchFriendsInGroup(state, action){
+      state.group_chat.friendsInGrp = action.payload
+    },
+    emptyGrpConversations(state, action){
+      state.group_chat.grpConversation = []
+      state.group_chat.groupId= null
+      state.group_chat.groupAdmin = ''
+      state.group_chat.groupAdminId = null
+      state.group_chat.restrict = true
+    }
   },
 });
 
@@ -219,6 +230,18 @@ export const FriendsNotInGrp = (data) =>{
 export function RestrictMembers (){
   return async(dispatch, getState)=>{
     dispatch(slice.actions.restrictMembers())
+  }
+}
+
+export const FetchFriendsInGroup = (data) =>{
+  return async(dispatch, getState)=>{
+    dispatch(slice.actions.fetchFriendsInGroup(data))
+  }
+}
+
+export function EmptyGrpConversations(){
+  return async(dispatch, getState)=>{
+    dispatch(slice.actions.emptyGrpConversations())
   }
 }
 

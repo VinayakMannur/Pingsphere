@@ -505,6 +505,53 @@ io.on("connection", async (socket) => {
   //   socket.emit("restrict", groupId.groupId)
   // })
 
+  socket.on("get_members_of_group", async({groupId}, callback)=>{
+
+    const members = await GroupMember.findAll({
+      attributes: [],
+      where: {
+        isAdmin: false,
+        groupId: groupId
+      },
+      include: {
+        model: User,
+        attributes: ["id", "firstName", "lastName"]
+      }
+    })
+    
+    const list = members.map((member)=>member.user.dataValues)
+    // console.log(list);
+    callback(list)
+    
+  })
+
+  socket.on("remove_from_group", async(data)=>{
+    // console.log(data);
+    socket.join(data.groupId)
+
+    const ids = data.selectedMembers.map((member)=>member.id)
+    console.log(ids);
+
+    const removedMembers = await GroupMember.destroy({
+      where: {
+        userId: ids,
+        groupId: data.groupId
+      }
+    })
+    const socketIds = await User.findAll({
+      where:{
+        id: ids
+      },
+      attributes: ["socket_id"]
+    })
+
+    socketIds.forEach((li)=>{
+      io.to(li.socket_id).emit("removed_from_group",{
+        message: `You were removed from ${data.groupName} group by admin !`
+      })
+    })
+  })
+
   socket.on("end",  async (data) => {
     if(data.user_id){
       const user = await User.update({status: "Offline"},{
