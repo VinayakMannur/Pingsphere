@@ -7,6 +7,7 @@ import { SelectConversation, UpdateConversation } from "../redux/slices/app";
 import {
   EmptyCurrentConversation,
   FetchGrpChats,
+  NewlyAddedAdmins,
   UpdateConversationId,
   UpdateGrpNameAdmin,
 } from "../redux/slices/conversation";
@@ -47,13 +48,14 @@ const ChatElement = ({
       }}
       onClick={() => {
         if(chat_type === "group"){
-          console.log("get_group_messages");
+          console.log("get_group_messages", id);
           socket.emit("get_group_messages",{id}, (data)=>{
-            // console.log(data);
-            const adminName = `${data.grpAdmin.user.firstName} ${data.grpAdmin.user.lastName}`
-            const groupAdminId = data.grpAdmin.user.id
+            console.log(data);
+            const adminName = `${data.grpAdmin.firstName} ${data.grpAdmin.lastName}`
+            const groupAdminId = data.grpAdmin.id
             dispatch(UpdateGrpNameAdmin({groupId: id, groupName: name, groupAdmin: adminName, groupAdminId: groupAdminId}))
             dispatch(FetchGrpChats(data.grpMessages))
+            dispatch(NewlyAddedAdmins(data.admins))
           })
         }
         else{

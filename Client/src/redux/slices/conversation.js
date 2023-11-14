@@ -24,6 +24,8 @@ const initialState = {
     friendsNGrp: [],
     restrict: false,
     friendsInGrp: [],
+    friendsNotAdmin: [],
+    newlyAddedAdmins: [],
   },
 };
 
@@ -142,7 +144,13 @@ const slice = createSlice({
       state.group_chat.groupAdmin = ''
       state.group_chat.groupAdminId = null
       state.group_chat.restrict = true
-    }
+    },
+    fetchFriendsNotAdmin(state, action){
+      state.group_chat.friendsNotAdmin = action.payload
+    },
+    newlyAddedAdmins(state, action){
+      state.group_chat.newlyAddedAdmins = action.payload
+    },
   },
 });
 
@@ -242,6 +250,18 @@ export const FetchFriendsInGroup = (data) =>{
 export function EmptyGrpConversations(){
   return async(dispatch, getState)=>{
     dispatch(slice.actions.emptyGrpConversations())
+  }
+}
+
+export const FetchFriendsNotAdmin = (data) =>{
+  return async(dispatch, getState)=>{
+    dispatch(slice.actions.fetchFriendsNotAdmin(data))
+  }
+}
+
+export const NewlyAddedAdmins = (data) =>{
+  return async(dispatch, getState)=>{
+    dispatch(slice.actions.newlyAddedAdmins(data))
   }
 }
 

@@ -58,6 +58,9 @@ User.belongsToMany(Group, { through: GroupMember });
 GroupMember.belongsTo(User, { foreignKey: 'userId' });
 Group.belongsToMany(User, { through: GroupMember });
 
+User.hasMany(Group)
+Group.belongsTo(User, {foreignKey: "createdBy"})
+
 Group.hasMany(GroupMessage);
 GroupMessage.belongsTo(Group);
 
@@ -91,7 +94,7 @@ io.on("connection", async (socket) => {
   const user_id = socket.handshake.query.user_id
   const socket_id = socket.id
 
-  console.log(`????????????????????user connected is ${user_id} and ${socket_id}`);
+  // console.log(`????????????????????user connected is ${user_id} and ${socket_id}`);
 
   if(user_id){
     const user = await User.update({socket_id: socket_id, status: "Online"},{
@@ -103,7 +106,7 @@ io.on("connection", async (socket) => {
 
  //socket event listeners
   socket.on("friend_request", async (data) => {
-    console.log(data);
+    // console.log(data);
 
     const to_user = await User.findByPk(data.to,{
       attributes: ["socket_id"]
@@ -129,7 +132,7 @@ io.on("connection", async (socket) => {
   })
 
   socket.on("accept_request", async (data) => {
-    console.log(data);
+    // console.log(data);
 
     //fetching request doc id from data
     const request_doc = await FriendRequest.findOne({
@@ -181,14 +184,14 @@ io.on("connection", async (socket) => {
 
   //fire when any user logs in to get the history of his conversation
   socket.on("get_direct_conversations", async ({user_id}, callback)=>{
-    console.log("get all friends list of this useriD",user_id);
+    // console.log("get all friends list of this useriD",user_id);
 
     const all_friends = await User.findByPk(user_id,{
       attributes: ["friends"]
     })
 
     const receiverIds = all_friends.friends;
-    console.log(receiverIds);
+    // console.log(receiverIds);
     const friendsDetails = await sequelize.query(`
       SELECT m.*, 
       u.id as senderId, u.firstName as senderFirstName, u.lastName as senderLastName, u.status as senderStatus,
@@ -311,7 +314,8 @@ io.on("connection", async (socket) => {
     // console.log(data);
 
     const createdGroup = await Group.create({
-      name: data.groupName
+      name: data.groupName,
+      createdBy: data.user_id
     })
     
     socket.join(createdGroup.id)
@@ -410,30 +414,16 @@ io.on("connection", async (socket) => {
     callback(gropInfo)
   })
 
-  socket.on("get_friends_not_paart_of_group", async({groupId}, callback)=>{
-    console.log("get_friends_not_paart_of_group",groupId);
-
-    const adminUser = await GroupMember.findOne({
-      where: {
-        isAdmin: true,
-        groupId: groupId
-      }
-    })
-
-    if (!adminUser) {
-      throw new Error('Admin user not found for the group.');
-    }
-
-    const adminUserId = adminUser.userId;
+  socket.on("get_friends_not_paart_of_group", async({groupId, user_id}, callback)=>{
+    // console.log("get_friends_not_paart_of_group",groupId);
 
     const groupMembers = await GroupMember.findAll({
       where: { 
         groupId,
-        isAdmin: false
       },
     });
 
-    const adminFriends = await User.findByPk(adminUserId,{
+    const adminFriends = await User.findByPk(parseInt(user_id),{
       attributes: ["friends"]
     })
 
@@ -456,33 +446,47 @@ io.on("connection", async (socket) => {
   })
 
   socket.on("get_group_messages", async ({id}, callback)=>{
-    console.log("get_group_messages",id);
+    try {
+      // console.log("get_group_messages???????????????????????????????/",id);
     
-    const grpMessages = await GroupMessage.findAll({
-      where: {
-        groupId: id
-      },
-      include: [
-        { 
-          model: User,
-          attributes: ["id","firstName", "lastName"]
+      const grpMessages = await GroupMessage.findAll({
+        where: {
+          groupId: id
+        },
+        include: [
+          { 
+            model: User,
+            attributes: ["id","firstName", "lastName"]
+          }
+        ]
+      })
+      const createdBy = await Group.findOne({
+        attributes: ["createdBy"],
+        where: {
+          id: id,
         }
-      ]
-    })
-    const grpAdmin = await GroupMember.findOne({
-      where: {
-        groupId: id,
-        isAdmin: true
-      },
-      include: [
-        { 
-          model: User,
-          attributes: ["id","firstName", "lastName"]
+      })
+
+      // console.log("++++++++++++++++",createdBy, id);
+      const userId = createdBy.dataValues.createdBy
+      const grpAdmin = await User.findByPk(userId,{
+        attributes: ["id", "firstName", "lastName"]
+      })
+
+      const grpAdmins = await GroupMember.findAll({
+        attributes: ["userId"],
+        where:{
+          groupId: id,
+          isAdmin: true
         }
-      ]
-    })
-    // console.log(grpMessages);
-    callback({grpMessages, grpAdmin})
+      })
+      const admins = grpAdmins.map((member)=> member.userId)
+      // console.log(grpMessages);
+      callback({grpMessages, grpAdmin, admins})
+    } catch (error) {
+      console.log(error);
+    }
+    
   })
 
   socket.on("grp_message", async(data)=>{
@@ -495,6 +499,7 @@ io.on("connection", async (socket) => {
     socket.join(data.groupId)
     // console.log(`User ${socket.id} sent a message to group ${data.groupId}`);
     io.to(data.groupId).emit("message_from_group",{
+      groupId: data.groupId,
       msg: "message_from_group"
     })
   })
@@ -505,8 +510,27 @@ io.on("connection", async (socket) => {
   //   socket.emit("restrict", groupId.groupId)
   // })
 
-  socket.on("get_members_of_group", async({groupId}, callback)=>{
+  socket.on("get_members_of_group", async({groupId, user_id}, callback)=>{
 
+    const members = await GroupMember.findAll({
+      attributes: [],
+      where: {
+        groupId: groupId
+      },
+      include: {
+        model: User,
+        attributes: ["id", "firstName", "lastName"]
+      }
+    })
+    
+    const updatedData = members.map((member)=>member.user.dataValues)
+    const list = updatedData.filter(item => item.id !== user_id)
+    // console.log(list, user_id);
+    callback(list)
+    
+  })
+
+  socket.on("get_friends_who_are_not_admin", async({groupId}, callback)=>{
     const members = await GroupMember.findAll({
       attributes: [],
       where: {
@@ -522,7 +546,42 @@ io.on("connection", async (socket) => {
     const list = members.map((member)=>member.user.dataValues)
     // console.log(list);
     callback(list)
+  })
+
+  socket.on("make_admin",async({groupName, selectedMembers, groupId})=>{
     
+    const ids = selectedMembers.map((member)=>member.id)
+    
+    const grp = await GroupMember.update({isAdmin: true},{
+      where:{
+        groupId,
+        userId: ids
+      }
+    })
+
+    const socketIds = await User.findAll({
+      attributes: ["socket_id"],
+      where:{
+        id: ids
+      }
+    })
+
+    const grpAdmins = await GroupMember.findAll({
+      attributes: ["userId"],
+      where:{
+        groupId,
+        isAdmin: true
+      }
+    })
+
+    const admins = grpAdmins.map((member)=> member.userId)
+    // console.log(admins);
+    socketIds.forEach((li)=>{
+      io.to(li.socket_id).emit("made_admin",{
+        admins: admins,
+        message: `You were now a admin for ${groupName} group !`
+      })
+    })
   })
 
   socket.on("remove_from_group", async(data)=>{
@@ -530,7 +589,7 @@ io.on("connection", async (socket) => {
     socket.join(data.groupId)
 
     const ids = data.selectedMembers.map((member)=>member.id)
-    console.log(ids);
+    // console.log(ids);
 
     const removedMembers = await GroupMember.destroy({
       where: {

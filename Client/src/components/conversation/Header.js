@@ -24,6 +24,7 @@ import {
   MagnifyingGlass,
   Phone,
   Plus,
+  UserCircleGear,
   UserCircleMinus,
   UserCirclePlus,
   VideoCamera,
@@ -33,21 +34,22 @@ import StyledBadge from "../StyleBadge";
 import { ToggleSidebar } from "../../redux/slices/app";
 import { useDispatch, useSelector } from "react-redux";
 import { socket } from "../../socket";
-import { FetchFriendsInGroup, FriendsNotInGrp, RestrictMembers } from "../../redux/slices/conversation";
+import { FetchFriendsInGroup, FetchFriendsNotAdmin, FriendsNotInGrp, RestrictMembers } from "../../redux/slices/conversation";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const CreateGroupDialog = ({ open, handleClose }) => {
+const AddMembersDialog = ({ open, handleClose }) => {
   const dispatch = useDispatch();
   const [selectedMembers, setSelectedMembers] = useState([]);
   const { groupId, groupName } = useSelector(
     (state) => state.conversation.group_chat
   );
+  const user_id = parseInt(window.localStorage.getItem("user_id"))
 
   useEffect(() => {
-    socket.emit("get_friends_not_paart_of_group", { groupId }, (data) => {
+    socket.emit("get_friends_not_paart_of_group", { groupId, user_id }, (data) => {
       // console.log(data);
       dispatch(FriendsNotInGrp(data));
     });
@@ -103,7 +105,7 @@ const CreateGroupDialog = ({ open, handleClose }) => {
   );
 };
 
-const RemoveMembersDialog = ({ open, handleClose }) => {
+const MakeAdminsDialog = ({ open, handleClose }) => {
   const dispatch = useDispatch();
   const [selectedMembers, setSelectedMembers] = useState([]);
   const { groupId, groupName } = useSelector(
@@ -111,8 +113,73 @@ const RemoveMembersDialog = ({ open, handleClose }) => {
   );
 
   useEffect(() => {
-    socket.emit("get_members_of_group", { groupId }, (data) => {
+    socket.emit("get_friends_who_are_not_admin", { groupId }, (data) => {
       // console.log(data);
+      dispatch(FetchFriendsNotAdmin(data))
+    });
+  }, []);
+
+  const { friendsNotAdmin } = useSelector((state) => state.conversation.group_chat);
+
+  const handleSubmit = () => {
+    // console.log("Selected Members:", selectedMembers);
+    socket.emit("make_admin", { groupName, selectedMembers, groupId });
+    handleClose();
+  };
+
+  return (
+    <Dialog
+      open={open}
+      TransitionComponent={Transition}
+      keepMounted
+      onClose={handleClose}
+      aria-describedby="alert-dialog-slide-description"
+    >
+      <DialogTitle>Make Admins of group</DialogTitle>
+      <DialogContent>
+        <DialogContentText id="alert-dialog-slide-description">
+          <Stack mt={2} spacing={3} sx={{ width: 500 }}>
+            <Autocomplete
+              multiple
+              id="tags-outlined"
+              options={friendsNotAdmin}
+              getOptionLabel={(option) =>
+                `${option.firstName} ${option.lastName}`
+              }
+              filterSelectedOptions
+              onChange={(event, newValue) => setSelectedMembers(newValue)}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Make admins of the group"
+                  placeholder="Make Admins"
+                />
+              )}
+            />
+          </Stack>
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleClose}>Close</Button>
+        <Button type="submit" onClick={handleSubmit} variant="contained">
+          Add
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
+
+const RemoveMembersDialog = ({ open, handleClose }) => {
+  const dispatch = useDispatch();
+  const [selectedMembers, setSelectedMembers] = useState([]);
+  const { groupId, groupName } = useSelector(
+    (state) => state.conversation.group_chat
+  );
+  const user_id = parseInt(window.localStorage.getItem("user_id"))
+
+  useEffect(() => {
+    socket.emit("get_members_of_group", { groupId, user_id }, (data) => {
+      console.log(data);
       dispatch(FetchFriendsInGroup(data))
     });
   }, []);
@@ -171,19 +238,24 @@ const RemoveMembersDialog = ({ open, handleClose }) => {
 const Header = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
-  const [openCreateGroup, setOpenCreateGroup] = useState(false);
+  const [openAddMembers, setOpenAddMembers] = useState(false);
   const [openRemoveMembers, setOpenRemoveMembers] = useState(false);
+  const [openNotAdminMembers, setOpenNotAdminMembers] = useState(false);
   const user_id = window.localStorage.getItem("user_id");
-  const { groupId } = useSelector(
+  const { groupId, newlyAddedAdmins } = useSelector(
     (state) => state.conversation.group_chat
   );
 
-  const handleCloseCreateGroupDialog = () => {
-    setOpenCreateGroup(false);
+  const handleCloseAddMembersDialog = () => {
+    setOpenAddMembers(false);
   };
 
   const handleCloseRemoveMembersDialog = () => {
     setOpenRemoveMembers(false);
+  };
+
+  const handleCloseFriendsNotDialog = () => {
+    setOpenNotAdminMembers(false);
   };
 
   const { to_user_name, to_user_status } = useSelector(
@@ -248,12 +320,12 @@ const Header = () => {
           </Stack>
         </Stack>
         <Stack alignItems={"center"} direction={"row"} spacing={2}>
-          {chat_type === "group" && parseInt(user_id) === groupAdminId ? (
+          {chat_type === "group" && newlyAddedAdmins.includes(parseInt(user_id)) ? (
             <>
               <Tooltip title="Add members to group">
                 <IconButton
                   onClick={() => {
-                    setOpenCreateGroup(true);
+                    setOpenAddMembers(true);
                   }}
                 >
                   <UserCirclePlus
@@ -262,14 +334,13 @@ const Header = () => {
                   />
                 </IconButton>
               </Tooltip>
-              {/* <Tooltip title="Restrict members from texting">
+              <Tooltip title="Make other members admin">
                 <IconButton onClick={()=>{
-                  dispatch(RestrictMembers())
-                  socket.emit("restrict_user", {groupId})
+                  setOpenNotAdminMembers(true)
                 }}>
-                  <LockLaminated />
+                  <UserCircleGear />
                 </IconButton>
-              </Tooltip> */}
+              </Tooltip>
               <Tooltip title="Remove members from group">
                 <IconButton onClick={()=>{
                   setOpenRemoveMembers(true)
@@ -300,16 +371,22 @@ const Header = () => {
           </IconButton>
         </Stack>
       </Stack>
-      {openCreateGroup && (
-        <CreateGroupDialog
-          open={openCreateGroup}
-          handleClose={handleCloseCreateGroupDialog}
+      {openAddMembers && (
+        <AddMembersDialog
+          open={openAddMembers}
+          handleClose={handleCloseAddMembersDialog}
         />
       )}
       {openRemoveMembers && (
         <RemoveMembersDialog
           open={openRemoveMembers}
           handleClose={handleCloseRemoveMembersDialog}
+        />
+      )}
+      {openNotAdminMembers && (
+        <MakeAdminsDialog
+          open={openNotAdminMembers}
+          handleClose={handleCloseFriendsNotDialog}
         />
       )}
     </Box>

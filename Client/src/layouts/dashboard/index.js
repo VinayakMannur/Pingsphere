@@ -6,7 +6,7 @@ import { useSelector } from "react-redux";
 import { connectSocket, socket } from "../../socket";
 import { SelectConversation, showSnackbar } from "../../redux/slices/app";
 import { useDispatch } from "react-redux";
-import { AddDirectMessage, EmptyGrpConversations, FetchCurrentConversation, FetchGrpChats, UpdateConversationId } from "../../redux/slices/conversation";
+import { AddDirectMessage, EmptyGrpConversations, FetchCurrentConversation, FetchGrpChats, NewlyAddedAdmins, UpdateConversationId } from "../../redux/slices/conversation";
 
 const DashboardLayout = () => {
   const dispatch = useDispatch()
@@ -15,7 +15,7 @@ const DashboardLayout = () => {
   const {conversationId} = useSelector((state)=> state.conversation.direct_chat)
   const {groupId} = useSelector((state)=>state.conversation.group_chat)
   const user_id = window.localStorage.getItem("user_id")
-
+  console.log("fuckkkkkkkkkk id ", groupId);
   useEffect(()=>{
 
     if(isLoggedIn){
@@ -36,12 +36,15 @@ const DashboardLayout = () => {
       socket.on("new_friend_request", (data)=>{
         dispatch(showSnackbar({severity: "success", message: data.message}))
       })
+
       socket.on("request_accepted", (data)=>{
         dispatch(showSnackbar({severity: "success", message: data.message}))
       })
+
       socket.on("request_sent", (data)=>{
         dispatch(showSnackbar({severity: "success", message: data.message}))
       })
+
       socket.on("start_chat", (data)=>{
         console.log(data);
         const name = `${data.toUserDetails.firstName} ${data.toUserDetails.lastName}`
@@ -57,6 +60,7 @@ const DashboardLayout = () => {
         //   dispatch(AddDirectConversation({conversation: data}))
         // }
       })
+
       socket.on("new_message", (data)=>{
         console.log(data);
         const id = parseInt(data.message.id)
@@ -91,8 +95,8 @@ const DashboardLayout = () => {
       
       socket.on("message_from_group", (data)=>{
         dispatch(showSnackbar({severity: "success", message: data.msg}))
-        
-        socket.emit("get_group_messages",{id: groupId}, (data)=>{
+        console.log("not going id ", groupId);
+        socket.emit("get_group_messages",{id: data.groupId}, (data)=>{
           console.log(data);
           dispatch(FetchGrpChats(data.grpMessages))
         })
@@ -100,6 +104,11 @@ const DashboardLayout = () => {
 
       socket.on("restrict", (data)=>{
         console.log("restrict");
+      })
+
+      socket.on("made_admin", (data)=>{
+        dispatch(showSnackbar({severity: "success", message: data.message}))
+        dispatch(NewlyAddedAdmins(data.admins))
       })
     }
 
