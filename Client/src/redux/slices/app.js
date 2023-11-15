@@ -21,6 +21,12 @@ const initialState = {
     phoneNumber: null,
     groupsInCommon: [],
   },
+  groupInfo: {
+    createdBy: null,
+    id: null,
+    grpName: null,
+    users: [],
+  },
   users: [],
   friends: [],
   // requests: [],
@@ -94,6 +100,13 @@ const slice = createSlice({
       state.contactInfo.phoneNumber = action.payload.userDetails.phonenumber
       state.contactInfo.groupsInCommon = action.payload.commonGroupsDetails
     },
+    updateGroupInfo(state, action){
+      // console.log(action.payload);
+      state.groupInfo.createdBy = action.payload.createdBy
+      state.groupInfo.id = action.payload.id
+      state.groupInfo.grpName = action.payload.name
+      state.groupInfo.users = action.payload.users
+    }
   },
 });
 
@@ -243,5 +256,11 @@ export function UpdateContactOneToOne(){
 export const UpdateContactInfo = (data) =>{
   return async(dispatch, getState) => {
     dispatch(slice.actions.updateContactInfo(data))
+  }
+}
+
+export const UpdateGroupInfo = (data) => {
+  return async(dispatch, getState)=>{
+    dispatch(slice.actions.updateGroupInfo(data))
   }
 }

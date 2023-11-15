@@ -18,7 +18,7 @@ import {
 import { useTheme } from "@mui/material/styles";
 import { Bell, CaretRight, Prohibit, Star, Trash, X } from "phosphor-react";
 import { useDispatch, useSelector } from "react-redux";
-import { ToggleSidebar, UpdateContactInfo, UpdateContactNull, UpdateSidebarType } from "../redux/slices/app";
+import { ToggleSidebar, UpdateContactInfo, UpdateContactNull, UpdateGroupInfo, UpdateSidebarType } from "../redux/slices/app";
 import { faker } from "@faker-js/faker";
 import { socket } from "../socket";
 import useResponsive from "../hooks/useResponsive";
@@ -80,6 +80,7 @@ const Contact = () => {
   const [openBlock, setOpenBlock] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
   const {to_user} = useSelector((state)=> state.conversation.direct_chat)
+  const {groupId} = useSelector((state)=> state.conversation.group_chat)
   const { chat_type } = useSelector((store) => store.app);
   const isMobile = useResponsive("between", "md", "xs", "sm");
   const user_id = parseInt(window.localStorage.getItem("user_id"))
@@ -91,12 +92,18 @@ const Contact = () => {
         dispatch(UpdateContactInfo(data))
       })
     }
+    else{
+      socket.emit("get_group_details", {groupId}, (data)=>{
+        // console.log(data);
+        dispatch(UpdateGroupInfo(data))
+      })
+    }
     
   },[])
 
   const {name, phoneNumber, groupsInCommon} = useSelector((state)=> state.app.contactInfo)
-  
-    console.log(groupsInCommon.length);
+  const {createdBy, id, grpName, users} = useSelector((state)=> state.app.groupInfo)
+  const {groupAdmin} = useSelector((state)=> state.conversation.group_chat)
 
   const handleCloseBlock = () => {
     setOpenBlock(false);
@@ -125,7 +132,7 @@ const Contact = () => {
             alignItems={"center"}
             justifyContent={"space-between"}
           >
-            <Typography variant="subtitle2">Contact Info</Typography>
+            <Typography variant="subtitle2">{chat_type === "individual" ? "Contact Info": "Group Info"}</Typography>
             <IconButton
               onClick={() => {
                 dispatch(ToggleSidebar());
@@ -172,9 +179,9 @@ const Contact = () => {
 
             <Stack direction={"column"} spacing={0.5}>
               <Typography variant="article">
-                {chat_type === "individual" ? name: <></>}
+                {chat_type === "individual" ? name: grpName}
               </Typography>
-              <Typography variant="body2">{chat_type === "individual" ? phoneNumber: <></>}</Typography>
+              <Typography variant="body2">{chat_type === "individual" ? phoneNumber: `Created by ${groupAdmin}`}</Typography>
             </Stack>
           </Stack>
           <Divider />
@@ -233,7 +240,20 @@ const Contact = () => {
               )):<></>}  
             </>
               :
-            <></>
+            <>
+              <Typography px={1} variant="body2">
+                Members
+              </Typography>
+              {users.length > 0 ? users.map((user)=>(
+                <Stack key={user.id} direction={"row"} px={1} spacing={2} alignItems={"center"}>
+                  <Avatar alt={faker.name.firstName()} src={faker.image.avatar()} />
+                  <Stack>
+                    <Typography variant="subtitle2">{`${user.firstName} ${user.lastName}`}</Typography>
+                  </Stack>
+                </Stack>
+              )):<></>}  
+            </>
+            
           }
           
           

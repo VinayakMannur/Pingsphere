@@ -649,6 +649,21 @@ io.on("connection", async (socket) => {
     callback({userDetails, commonGroupsDetails})
   })
 
+  socket.on("get_group_details", async({groupId}, callback)=>{
+    const groupDetails = await Group.findByPk(groupId,{
+      include: [
+        {
+          model: User,
+          through: { model: GroupMember, attributes: [] },
+        },
+      ],
+      attributes: ["createdBy", "name", "id"]
+    })
+    // console.log(groupDetails);
+    callback(groupDetails)
+
+  })
+
   socket.on("end",  async (data) => {
     if(data.user_id){
       const user = await User.update({status: "Offline"},{
