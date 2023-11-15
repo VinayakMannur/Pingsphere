@@ -48,9 +48,9 @@ const ChatInput = ({ inputRef, value, setValue, setOpenPicker }) => {
                 display: openActions ? "inline" : "none",
               }}
             >
-              {Actions.map((el) => {
+              {Actions.map((el, idx) => {
                 return (
-                  <Tooltip title={el.title} placement={"right"}>
+                  <Tooltip key={idx} title={el.title} placement={"right"}>
                     <Fab
                       onClick={() => {
                         setOpenActions(!openActions);
@@ -68,7 +68,7 @@ const ChatInput = ({ inputRef, value, setValue, setOpenPicker }) => {
               })}
             </Stack>
 
-            <InputAdornment>
+            <InputAdornment position="start">
               <IconButton
                 onClick={() => {
                   setOpenActions((prev) => !prev);
@@ -80,7 +80,7 @@ const ChatInput = ({ inputRef, value, setValue, setOpenPicker }) => {
           </Stack>
         ),
         endAdornment: (
-          <InputAdornment>
+          <InputAdornment position="end">
             <IconButton
               onClick={() => {
                 setOpenPicker((prev) => !prev);
@@ -173,7 +173,7 @@ const Footer = () => {
             <StyledInput
               disabled
               fullWidth
-              placeholder="Onlu admin can send a message..."
+              placeholder="Only admin can send a message..."
               variant="filled"
             />
           )}

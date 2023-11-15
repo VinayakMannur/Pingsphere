@@ -21,23 +21,9 @@ const Message = ({menu}) => {
     <Box p={2}>
       <Stack spacing={2}>
         {chat_type === "group" ?(grpConversation.length>0 && grpConversation.map((el, idx) => {
-          switch (el.type) {
-            case "divider":
-              return <Timeline el={el} idx={idx}/>;
-            case "msg":
-              return <TextMsg el={el} idx={idx} menu={menu}/>;       
-            default:
-              return <></>;
-          }
+          return <TextMsg key={idx} el={el} idx={idx} menu={menu}/>;   
         })): (current_conversation && current_conversation.map((el, idx) => {
-          switch (el.type) {
-            case "divider":
-              return <Timeline el={el} idx={idx}/>;
-            case "msg":
-              return <TextMsg el={el} idx={idx} menu={menu}/>;
-            default:
-              return <></>;
-          }
+          return <TextMsg key={idx} el={el} idx={idx} menu={menu}/>;
         }))
         }
       </Stack>

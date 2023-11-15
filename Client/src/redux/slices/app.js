@@ -32,7 +32,11 @@ const initialState = {
   // requests: [],
   friendRequests: [],
   chat_type: null,
-  room_id: null,
+  selfInfo: {
+    name: null,
+    email: null,
+    phoneNumber: null
+  },
 };
 
 const slice = createSlice({
@@ -106,6 +110,13 @@ const slice = createSlice({
       state.groupInfo.id = action.payload.id
       state.groupInfo.grpName = action.payload.name
       state.groupInfo.users = action.payload.users
+    },
+    updateSelfInfo(state, action){
+      // console.log(action.payload);
+      const name = `${action.payload.firstName} ${action.payload.lastName}`
+      state.selfInfo.name = name
+      state.selfInfo.email = action.payload.email
+      state.selfInfo.phoneNumber = action.payload.phonenumber
     }
   },
 });
@@ -262,5 +273,11 @@ export const UpdateContactInfo = (data) =>{
 export const UpdateGroupInfo = (data) => {
   return async(dispatch, getState)=>{
     dispatch(slice.actions.updateGroupInfo(data))
+  }
+}
+
+export const UpdateSelfInfo = (data) =>{
+  return async (dispatch, getState) =>{
+    dispatch(slice.actions.updateSelfInfo(data))
   }
 }

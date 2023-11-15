@@ -30,30 +30,20 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const BlockDialog = ({ open, handleClose }) => {
-  return (
-    <Dialog
-      open={open}
-      TransitionComponent={Transition}
-      keepMounted
-      onClose={handleClose}
-      aria-describedby="alert-dialog-slide-description"
-    >
-      <DialogTitle>Block this contact</DialogTitle>
-      <DialogContent>
-        <DialogContentText id="alert-dialog-slide-description">
-        Are you sure you want to block this contact?
-        </DialogContentText>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={handleClose}>Cancel</Button>
-        <Button onClick={handleClose}>Yes</Button>
-      </DialogActions>
-    </Dialog>
-  );
-};
-
 const DeleteDialog = ({ open, handleClose }) => {
+
+  const { groupId, groupName } = useSelector(
+    (state) => state.conversation.group_chat
+  );
+  const user_id = parseInt(window.localStorage.getItem("user_id"))
+
+  const handleSubmit = () => {
+    // console.log("Selected Members:", selectedMembers);
+    socket.emit("self_remove_from_group", { groupName, user_id, groupId });
+    handleClose();
+  };
+
+
   return (
     <Dialog
       open={open}
@@ -62,15 +52,15 @@ const DeleteDialog = ({ open, handleClose }) => {
       onClose={handleClose}
       aria-describedby="alert-dialog-slide-description"
     >
-      <DialogTitle>Delete this chat</DialogTitle>
+      <DialogTitle>Exit from group</DialogTitle>
       <DialogContent>
-        <DialogContentText id="alert-dialog-slide-description">
-          Are you sure you want to delete this chat?
-        </DialogContentText>
+        <div id="alert-dialog-slide-description">
+          Are you sure you want to exit from group?
+        </div>
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Cancel</Button>
-        <Button onClick={handleClose}>Yes</Button>
+        <Button onClick={handleSubmit}>Yes</Button>
       </DialogActions>
     </Dialog>
   );
@@ -109,7 +99,7 @@ const AddMembersDialog = ({ open, handleClose }) => {
     >
       <DialogTitle>Add Members to group</DialogTitle>
       <DialogContent>
-        <DialogContentText id="alert-dialog-slide-description">
+        <div id="alert-dialog-slide-description">
           <Stack mt={2} spacing={3} sx={{ width: 500 }}>
             <Autocomplete
               multiple
@@ -129,7 +119,7 @@ const AddMembersDialog = ({ open, handleClose }) => {
               )}
             />
           </Stack>
-        </DialogContentText>
+        </div>
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Close</Button>
@@ -173,7 +163,7 @@ const MakeAdminsDialog = ({ open, handleClose }) => {
     >
       <DialogTitle>Make Admins of group</DialogTitle>
       <DialogContent>
-        <DialogContentText id="alert-dialog-slide-description">
+        <div id="alert-dialog-slide-description">
           <Stack mt={2} spacing={3} sx={{ width: 500 }}>
             <Autocomplete
               multiple
@@ -193,7 +183,7 @@ const MakeAdminsDialog = ({ open, handleClose }) => {
               )}
             />
           </Stack>
-        </DialogContentText>
+        </div>
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Close</Button>
@@ -239,7 +229,7 @@ const RemoveMembersDialog = ({ open, handleClose }) => {
     >
       <DialogTitle>Remove Members from group</DialogTitle>
       <DialogContent>
-        <DialogContentText id="alert-dialog-slide-description">
+        <div id="alert-dialog-slide-description">
           <Stack mt={2} spacing={3} sx={{ width: 500 }}>
             <Autocomplete
               multiple
@@ -259,7 +249,7 @@ const RemoveMembersDialog = ({ open, handleClose }) => {
               )}
             />
           </Stack>
-        </DialogContentText>
+        </div>
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Close</Button>
@@ -497,36 +487,28 @@ const Contact = () => {
                 </Stack>
               )):<></>}  
             </>
-            
           }
+          {chat_type === "group" ? 
+            <>
+              <Divider />
+              <Stack direction={"row"} px={1} alignItems={"center"} spacing={2}>
+                <Button
+                  onClick={() => {
+                    setOpenDelete(true);
+                  }}
+                  fullWidth
+                  startIcon={<Trash />}
+                  variant="outlined"
+                >
+                  Exit from group
+                </Button>
+              </Stack>
+          </>
+          :<></>}
           
-          
-          <Divider />
-          <Stack direction={"row"} px={1} alignItems={"center"} spacing={2}>
-            <Button
-              onClick={() => {
-                setOpenBlock(true);
-              }}
-              fullWidth
-              startIcon={<Prohibit />}
-              variant="outlined"
-            >
-              Block
-            </Button>
-            <Button
-              onClick={() => {
-                setOpenDelete(true);
-              }}
-              fullWidth
-              startIcon={<Trash />}
-              variant="outlined"
-            >
-              Delete
-            </Button>
-          </Stack>
         </Stack>
       </Stack>
-      {openBlock && <BlockDialog open={openBlock} handleClose={handleCloseBlock}/>}
+      
       {openDelete && <DeleteDialog open={openDelete} handleClose={handleCloseDelete}/>}
       {openAddMembers && (
         <AddMembersDialog

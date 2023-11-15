@@ -12,8 +12,8 @@ import {
 import { faker } from "@faker-js/faker";
 import useSettings from "../hooks/useSettings";
 import Logo from "../assets/Images/logo.png";
-import { Nav_Buttons, Profile_Menu } from "../data/index";
-import { Gear } from "phosphor-react";
+import { Profile_Menu } from "../data/index";
+import { ChatCircleDots, Gear, Users } from "phosphor-react";
 import MaterialUISwitch from "./MaterialUISwitch";
 import { useNavigate } from "react-router-dom";
 import useResponsive from "../hooks/useResponsive";
@@ -21,6 +21,17 @@ import { LogoutUser } from "../redux/slices/auth";
 import { useDispatch } from "react-redux";
 import { socket } from "../socket";
 import { SelectConversation, UpdateContactNull, UpdateOneToOneChats, updateGroupChats } from "../redux/slices/app";
+
+const Nav_Buttons = [
+  {
+    index: 0,
+    icon: <ChatCircleDots />,
+  },
+  {
+    index: 1,
+    icon: <Users />,
+  },
+];
 
 const getPath = (index) => {
   switch (index) {
@@ -163,39 +174,6 @@ const SideBar = () => {
               )
             )}
             <Divider sx={{ width: "48px" }} />
-            {selected === 3 ? (
-              <Box
-                p={0.5}
-                sx={{
-                  backgroundColor: theme.palette.primary.main,
-                  borderRadius: 1.5,
-                }}
-              >
-                <IconButton
-                  sx={{ width: "max-content", color: "#fff" }}
-                  key={3}
-                >
-                  <Gear />
-                </IconButton>
-              </Box>
-            ) : (
-              <IconButton
-                onClick={() => {
-                  setSelected(3);
-                  navigate(getPath(3));
-                }}
-                sx={{
-                  width: "max-content",
-                  color:
-                    theme.palette.mode === "light"
-                      ? "#000"
-                      : theme.palette.text.primary,
-                }}
-                key={3}
-              >
-                <Gear />
-              </IconButton>
-            )}
           </Stack>
         </Stack>
         <Stack spacing={3} alignItems={"center"}>

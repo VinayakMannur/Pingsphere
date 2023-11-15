@@ -62,7 +62,7 @@ const CreateGroupDialog = ({ open, handleClose }) => {
     >
       <DialogTitle>Create Group</DialogTitle>
       <DialogContent>
-        <DialogContentText id="alert-dialog-slide-description">
+        <div id="alert-dialog-slide-description">
           <Stack mt={2} spacing={3} sx={{ width: 500 }}>
             <Typography variant="body2">
               Enter the group name and the members
@@ -91,7 +91,7 @@ const CreateGroupDialog = ({ open, handleClose }) => {
               )}
             />
           </Stack>
-        </DialogContentText>
+        </div>
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Close</Button>
@@ -196,8 +196,8 @@ const GroupChats = () => {
               <Typography variant="subtitle2" sx={{ color: "#767676" }}>
                 All Groups
               </Typography>
-              {groupList.filter((el) => !el.pinned).map((el) => {
-                return <ChatElement {...el} />;
+              {groupList.filter((el) => !el.pinned).map((el, idx) => {
+                return <ChatElement key={idx} {...el} />;
               })}
             </Stack>
           </SimpleBarStyle>

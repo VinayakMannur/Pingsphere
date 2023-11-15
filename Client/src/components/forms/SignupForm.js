@@ -43,6 +43,7 @@ const SignupForm = () => {
             label="First Name"
             variant="outlined"
             onInput={(e) => setFirstName(e.target.value)}
+            autoComplete="firstname"
           />
           <TextField
             required
@@ -51,6 +52,7 @@ const SignupForm = () => {
             label="Last Name"
             variant="outlined"
             onInput={(e) => setLastName(e.target.value)}
+            autoComplete="lastname"
           />
         </Stack>
 
@@ -61,6 +63,7 @@ const SignupForm = () => {
           label="Email"
           variant="outlined"
           onInput={(e) => setEmail(e.target.value)}
+          autoComplete="email"
         />
         <TextField
           required
@@ -69,6 +72,7 @@ const SignupForm = () => {
           label="Phone Number"
           variant="outlined"
           onInput={(e) => setPhonenumber(e.target.value)}
+          autoComplete="phonenumber"
         />
         <TextField
           fullWidth
@@ -80,7 +84,7 @@ const SignupForm = () => {
           type={showPassword ? "text" : "password"}
           InputProps={{
             endAdornment: (
-              <InputAdornment>
+              <InputAdornment position="end">
                 <IconButton
                   onClick={() => {
                     setShowPassword(!showPassword);
@@ -95,6 +99,7 @@ const SignupForm = () => {
               </InputAdornment>
             ),
           }}
+          autoComplete="current-password"
         />
       </Stack>
       {/* <Stack alignItems={"flex-end"} sx={{ my: 1 }}>

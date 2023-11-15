@@ -71,9 +71,6 @@ const Chatss = () => {
               >
                 <Users />
               </IconButton>
-              <IconButton>
-                <CircleDashed />
-              </IconButton>
             </Stack>
           </Stack>
           <Stack sx={{ width: "100%" }}>
@@ -126,8 +123,8 @@ const Chatss = () => {
               <Typography variant="subtitle2" sx={{ color: "#767676" }}>
                 All Chats
               </Typography>
-              {conversations.filter((el) => !el.pinned).map((el) => {
-                return <ChatElement {...el} />;
+              {conversations.filter((el) => !el.pinned).map((el, idx) => {
+                return <ChatElement key={idx} {...el} />;
               })}
             </Stack>
             </SimpleBarStyle>

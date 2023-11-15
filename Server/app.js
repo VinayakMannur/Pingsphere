@@ -611,6 +611,25 @@ io.on("connection", async (socket) => {
     })
   })
 
+  socket.on("self_remove_from_group", async(data)=>{
+    // console.log(data);
+    socket.join(data.groupId)
+
+    const removedMembers = await GroupMember.destroy({
+      where: {
+        userId: data.user_id,
+        groupId: data.groupId
+      }
+    })
+    const socketIds = await User.findByPk(data.user_id,{
+      attributes: ["socket_id"]
+    })
+
+    io.to(socketIds.socket_id).emit("removed_from_group",{
+      message: `You exited from ${data.groupName} group !`
+    })
+  })
+
   socket.on("get_user_details", async({to_user, user_id}, callback)=>{
     const userDetails = await User.findByPk(to_user,{
       attributes: ["firstName", "lastName", "avatar", "phonenumber"]
@@ -662,6 +681,13 @@ io.on("connection", async (socket) => {
     // console.log(groupDetails);
     callback(groupDetails)
 
+  })
+
+  socket.on("get_self_info", async({user_id}, callback)=>{
+    const userDetails = await User.findByPk(user_id,{
+      attributes: ["firstName", "lastName", "email", "phonenumber"]
+    })
+    callback(userDetails)
   })
 
   socket.on("end",  async (data) => {

@@ -40,6 +40,7 @@ const LoginForm = () => {
             label="Email"
             variant="outlined"
             onInput={(e) => setEmail(e.target.value)}
+            autoComplete="email"
           />
           <TextField
             required
@@ -51,7 +52,7 @@ const LoginForm = () => {
             type={showPassword ? "text" : "password"}
             InputProps={{
               endAdornment: (
-                <InputAdornment>
+                <InputAdornment position="end">
                   <IconButton
                     onClick={() => {
                       setShowPassword(!showPassword);
@@ -66,6 +67,7 @@ const LoginForm = () => {
                 </InputAdornment>
               ),
             }}
+            autoComplete="current-password"
           />
         </Stack>
         <Stack alignItems={"flex-end"} sx={{ my: 1 }}>

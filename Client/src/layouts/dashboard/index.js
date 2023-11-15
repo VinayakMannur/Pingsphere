@@ -4,9 +4,10 @@ import { Stack } from "@mui/material";
 import SideBar from "../../components/SideBar";
 import { useSelector } from "react-redux";
 import { connectSocket, socket } from "../../socket";
-import { SelectConversation, UpdateToOneToOneConversation, showSnackbar } from "../../redux/slices/app";
+import { SelectConversation, UpdateContactNull, UpdateToOneToOneConversation, showSnackbar, updateGroupChats } from "../../redux/slices/app";
 import { useDispatch } from "react-redux";
 import { AddDirectMessage, EmptyGrpConversations, FetchCurrentConversation, FetchGrpChats, NewlyAddedAdmins, UpdateConversationId } from "../../redux/slices/conversation";
+import useResponsive from "../../hooks/useResponsive";
 
 const DashboardLayout = () => {
   const dispatch = useDispatch()
@@ -15,6 +16,7 @@ const DashboardLayout = () => {
   const {conversationId} = useSelector((state)=> state.conversation.direct_chat)
   const {groupId} = useSelector((state)=>state.conversation.group_chat)
   const user_id = window.localStorage.getItem("user_id")
+  const isMobile = useResponsive("between", "md", "xs", "sm");
   // console.log("fuckkkkkkkkkk id ", groupId);
   useEffect(()=>{
 
@@ -92,6 +94,10 @@ const DashboardLayout = () => {
       socket.on("removed_from_group", (data)=>{
         dispatch(showSnackbar({severity: "success", message: data.message}))
         dispatch(EmptyGrpConversations())
+        if(isMobile){
+          dispatch(updateGroupChats())
+          dispatch(UpdateContactNull())
+        }
       })
       
       socket.on("message_from_group", (data)=>{
