@@ -4,7 +4,7 @@ import { Stack } from "@mui/material";
 import SideBar from "../../components/SideBar";
 import { useSelector } from "react-redux";
 import { connectSocket, socket } from "../../socket";
-import { SelectConversation, showSnackbar } from "../../redux/slices/app";
+import { SelectConversation, UpdateToOneToOneConversation, showSnackbar } from "../../redux/slices/app";
 import { useDispatch } from "react-redux";
 import { AddDirectMessage, EmptyGrpConversations, FetchCurrentConversation, FetchGrpChats, NewlyAddedAdmins, UpdateConversationId } from "../../redux/slices/conversation";
 
@@ -15,7 +15,7 @@ const DashboardLayout = () => {
   const {conversationId} = useSelector((state)=> state.conversation.direct_chat)
   const {groupId} = useSelector((state)=>state.conversation.group_chat)
   const user_id = window.localStorage.getItem("user_id")
-  console.log("fuckkkkkkkkkk id ", groupId);
+  // console.log("fuckkkkkkkkkk id ", groupId);
   useEffect(()=>{
 
     if(isLoggedIn){
@@ -46,11 +46,12 @@ const DashboardLayout = () => {
       })
 
       socket.on("start_chat", (data)=>{
-        console.log(data);
+        // console.log(data);
         const name = `${data.toUserDetails.firstName} ${data.toUserDetails.lastName}`
         dispatch(UpdateConversationId({conversationId: data.adding_conversationId.conversationId, to_user: data.toUserDetails.id, to_user_name: name, to_user_status: data.toUserDetails.status}))
         dispatch(FetchCurrentConversation())
         dispatch(SelectConversation())
+        dispatch(UpdateToOneToOneConversation())
 
         // if presence of exisiting conversation
         // if(){
@@ -62,12 +63,12 @@ const DashboardLayout = () => {
       })
 
       socket.on("new_message", (data)=>{
-        console.log(data);
+        // console.log(data);
         const id = parseInt(data.message.id)
         const text = data.message.text
         const senderId = parseInt(data.message.senderId)
         if(parseInt(conversationId) === parseInt(data.conversationId)){
-          console.log("severity: \\message: data.snack}");
+          // console.log("severity: \\message: data.snack}");
           dispatch(showSnackbar({severity: "success", message: data.snack}))
           dispatch(AddDirectMessage({
             id: id,
@@ -95,9 +96,9 @@ const DashboardLayout = () => {
       
       socket.on("message_from_group", (data)=>{
         dispatch(showSnackbar({severity: "success", message: data.msg}))
-        console.log("not going id ", groupId);
+        // console.log("not going id ", groupId);
         socket.emit("get_group_messages",{id: data.groupId}, (data)=>{
-          console.log(data);
+          // console.log(data);
           dispatch(FetchGrpChats(data.grpMessages))
         })
       })
@@ -120,6 +121,8 @@ const DashboardLayout = () => {
       socket?.off("new_message")
       socket?.off("group_created")
       socket?.off("added_to_group")
+      socket?.off("removed_from_group")
+      socket?.off("made_admin")
     }
 
   },[isLoggedIn, socket])

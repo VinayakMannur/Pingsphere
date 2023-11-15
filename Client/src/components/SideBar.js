@@ -20,6 +20,7 @@ import useResponsive from "../hooks/useResponsive";
 import { LogoutUser } from "../redux/slices/auth";
 import { useDispatch } from "react-redux";
 import { socket } from "../socket";
+import { SelectConversation, UpdateContactNull, UpdateOneToOneChats, updateGroupChats } from "../redux/slices/app";
 
 const getPath = (index) => {
   switch (index) {
@@ -136,6 +137,14 @@ const SideBar = () => {
                   onClick={() => {
                     setSelected(el.index);
                     navigate(getPath(el.index));
+                    if(el.index === 1 && isMobile){
+                      dispatch(updateGroupChats())
+                    }
+                    if(el.index === 0 && isMobile){
+                      dispatch(SelectConversation())
+                      dispatch(UpdateOneToOneChats())
+                      dispatch(UpdateContactNull())
+                    }
                   }}
                   sx={{
                     width: "max-content",

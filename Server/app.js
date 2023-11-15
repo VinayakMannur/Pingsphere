@@ -611,6 +611,44 @@ io.on("connection", async (socket) => {
     })
   })
 
+  socket.on("get_user_details", async({to_user, user_id}, callback)=>{
+    const userDetails = await User.findByPk(to_user,{
+      attributes: ["firstName", "lastName", "avatar", "phonenumber"]
+    })  
+
+    const groupsUser1 = await Group.findAll({
+      include: [
+        {
+          model: User,
+          where: { id: to_user },
+          through: { model: GroupMember, attributes: [] },
+        },
+      ],
+      attributes: ['id', 'name'],
+    });
+
+    const groupsUser2 = await Group.findAll({
+      include: [
+        {
+          model: User,
+          where: { id: user_id },
+          through: { model: GroupMember, attributes: [] },
+        },
+      ],
+      attributes: ['id', 'name'],
+    });
+
+    const user1Groups = groupsUser1.map((group) => group.id);
+    const commonGroups = groupsUser2.filter((group) => user1Groups.includes(group.id));
+
+    const commonGroupsDetails = commonGroups.map((group) => ({
+      id: group.id,
+      groupName: group.name,
+    }));
+
+    callback({userDetails, commonGroupsDetails})
+  })
+
   socket.on("end",  async (data) => {
     if(data.user_id){
       const user = await User.update({status: "Offline"},{

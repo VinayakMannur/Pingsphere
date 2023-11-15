@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Avatar,
   Box,
@@ -17,9 +17,11 @@ import {
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { Bell, CaretRight, Prohibit, Star, Trash, X } from "phosphor-react";
-import { useDispatch } from "react-redux";
-import { ToggleSidebar, UpdateSidebarType } from "../redux/slices/app";
+import { useDispatch, useSelector } from "react-redux";
+import { ToggleSidebar, UpdateContactInfo, UpdateContactNull, UpdateSidebarType } from "../redux/slices/app";
 import { faker } from "@faker-js/faker";
+import { socket } from "../socket";
+import useResponsive from "../hooks/useResponsive";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -77,6 +79,24 @@ const Contact = () => {
 
   const [openBlock, setOpenBlock] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
+  const {to_user} = useSelector((state)=> state.conversation.direct_chat)
+  const { chat_type } = useSelector((store) => store.app);
+  const isMobile = useResponsive("between", "md", "xs", "sm");
+  const user_id = parseInt(window.localStorage.getItem("user_id"))
+
+  useEffect(()=>{
+    if(chat_type === "individual"){
+      socket.emit("get_user_details", {to_user, user_id}, (data)=>{
+        // console.log(data);
+        dispatch(UpdateContactInfo(data))
+      })
+    }
+    
+  },[])
+
+  const {name, phoneNumber, groupsInCommon} = useSelector((state)=> state.app.contactInfo)
+  
+    console.log(groupsInCommon.length);
 
   const handleCloseBlock = () => {
     setOpenBlock(false);
@@ -87,7 +107,7 @@ const Contact = () => {
   };
 
   return (
-    <Box sx={{ width: 320, height: "100vh" }}>
+    <Box sx={{ width: isMobile ? "100%":  320, height: "100vh" }}>
       <Stack width={"100%"} height={"100%"}>
         <Box
           sx={{
@@ -109,7 +129,11 @@ const Contact = () => {
             <IconButton
               onClick={() => {
                 dispatch(ToggleSidebar());
+                if(isMobile){
+                  dispatch(UpdateContactNull())
+                }
               }}
+              
             >
               <X />
             </IconButton>
@@ -148,9 +172,9 @@ const Contact = () => {
 
             <Stack direction={"column"} spacing={0.5}>
               <Typography variant="article">
-                {faker.name.firstName()}
+                {chat_type === "individual" ? name: <></>}
               </Typography>
-              <Typography variant="body2">7353352894</Typography>
+              <Typography variant="body2">{chat_type === "individual" ? phoneNumber: <></>}</Typography>
             </Stack>
           </Stack>
           <Divider />
@@ -159,32 +183,7 @@ const Contact = () => {
             <Typography variant="body2">Hell yaa!!!!!!!!!!</Typography>
           </Stack>
           <Divider />
-          <Stack
-            px={1}
-            direction={"row"}
-            alignItems={"center"}
-            justifyContent={"space-between"}
-          >
-            <Typography variant="subtitle2">Media, Links & Docs</Typography>
-            <Button
-              onClick={() => {
-                dispatch(UpdateSidebarType("SHARED"));
-              }}
-              endIcon={<CaretRight />}
-            >
-              20
-            </Button>
-          </Stack>
-          <Stack direction={"row"} alignItems={"center"} px={1} spacing={1}>
-            {[1, 2, 3].map((el) => {
-              return (
-                <Box>
-                  <img src={faker.image.food()} alt={faker.name.firstName()} />
-                </Box>
-              );
-            })}
-          </Stack>
-          <Divider />
+          
           <Stack
             direction={"row"}
             alignItems={"center"}
@@ -219,16 +218,25 @@ const Contact = () => {
             </IconButton>
           </Stack>
           <Divider />
-          <Typography px={1} variant="body2">
-            1 group in common
-          </Typography>
-          <Stack direction={"row"} px={1} spacing={2} alignItems={"center"}>
-            <Avatar alt={faker.name.firstName()} src={faker.image.avatar()} />
-            <Stack>
-              <Typography variant="subtitle2">Help</Typography>
-              <Typography variant="body2">Cat, Dog, noting, You</Typography>
-            </Stack>
-          </Stack>
+          {chat_type === "individual" ? 
+            <>
+              <Typography px={1} variant="body2">
+                1 group in common
+              </Typography>
+              {groupsInCommon.length > 0 ? groupsInCommon.map((grp)=>(
+                <Stack key={grp.id} direction={"row"} px={1} spacing={2} alignItems={"center"}>
+                  <Avatar alt={faker.name.firstName()} src={faker.image.avatar()} />
+                  <Stack>
+                    <Typography variant="subtitle2">{grp.groupName}</Typography>
+                  </Stack>
+                </Stack>
+              )):<></>}  
+            </>
+              :
+            <></>
+          }
+          
+          
           <Divider />
           <Stack direction={"row"} px={1} alignItems={"center"} spacing={2}>
             <Button

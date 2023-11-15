@@ -3,7 +3,7 @@ import { Avatar, Badge, Box, Stack, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import StyledBadge from "./StyleBadge";
 import { useDispatch, useSelector } from "react-redux";
-import { SelectConversation, UpdateConversation } from "../redux/slices/app";
+import { SelectConversation, UpdateConversation, UpdateGroupConversation, UpdateToOneToOneConversation } from "../redux/slices/app";
 import {
   EmptyCurrentConversation,
   FetchGrpChats,
@@ -13,6 +13,7 @@ import {
 } from "../redux/slices/conversation";
 import { socket } from "../socket";
 import { useEffect } from "react";
+import useResponsive from "../hooks/useResponsive";
 
 const ChatElement = ({
   id,
@@ -33,6 +34,8 @@ const ChatElement = ({
   );
   const { chat_type } = useSelector((state) => state.app);
   const { groupName, groupAdmin } = useSelector((state)=> state.conversation.group_chat)
+  const isMobile = useResponsive("between", "md", "xs", "sm");
+
 
   return (
     <Box
@@ -48,6 +51,9 @@ const ChatElement = ({
       }}
       onClick={() => {
         if(chat_type === "group"){
+          if(isMobile){
+            dispatch(UpdateGroupConversation())
+          }
           console.log("get_group_messages", id);
           socket.emit("get_group_messages",{id}, (data)=>{
             console.log(data);
@@ -59,6 +65,9 @@ const ChatElement = ({
           })
         }
         else{
+          if(isMobile){
+            dispatch(UpdateToOneToOneConversation())
+          }
           dispatch(
             UpdateConversationId({
               conversationId: id,

@@ -20,6 +20,7 @@ import {
 import { useTheme } from "@mui/material/styles";
 import {
   CaretDown,
+  CaretLeft,
   LockLaminated,
   MagnifyingGlass,
   Phone,
@@ -31,10 +32,11 @@ import {
 } from "phosphor-react";
 import { faker } from "@faker-js/faker";
 import StyledBadge from "../StyleBadge";
-import { ToggleSidebar } from "../../redux/slices/app";
+import { ToggleSidebar, UpdateContactGroup, UpdateContactNull, UpdateContactOneToOne, UpdateOneToOneChats, updateGroupChats } from "../../redux/slices/app";
 import { useDispatch, useSelector } from "react-redux";
 import { socket } from "../../socket";
 import { FetchFriendsInGroup, FetchFriendsNotAdmin, FriendsNotInGrp, RestrictMembers } from "../../redux/slices/conversation";
+import useResponsive from "../../hooks/useResponsive";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -245,6 +247,7 @@ const Header = () => {
   const { groupId, newlyAddedAdmins } = useSelector(
     (state) => state.conversation.group_chat
   );
+  const isMobile = useResponsive("between", "md", "xs", "sm");
 
   const handleCloseAddMembersDialog = () => {
     setOpenAddMembers(false);
@@ -287,12 +290,22 @@ const Header = () => {
       >
         <Stack
           onClick={() => {
-            dispatch(ToggleSidebar());
+            if(!isMobile){
+              dispatch(ToggleSidebar());
+            }
+            if(isMobile && chat_type === "individual"){
+              dispatch(UpdateContactOneToOne())
+            }
+            if(isMobile && chat_type === "group"){
+              dispatch(UpdateContactGroup())
+            }
           }}
           direction={"row"}
           spacing={2}
         >
+          
           <Box>
+            
             <StyledBadge
               overlap="circular"
               anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
@@ -353,22 +366,17 @@ const Header = () => {
             </>
           ) : (
             <>
-              <IconButton>
-                <VideoCamera />
-              </IconButton>
-              <IconButton>
-                <Phone />
-              </IconButton>
-            </>
+            <IconButton onClick={()=>{
+              if(isMobile){
+                dispatch(UpdateOneToOneChats())
+                dispatch(updateGroupChats())
+                dispatch(UpdateContactNull())
+              }
+            }}>
+              <CaretLeft/>
+            </IconButton></>
           )}
-
-          <IconButton>
-            <MagnifyingGlass />
-          </IconButton>
-          <Divider orientation="vertical" flexItem />
-          <IconButton>
-            <CaretDown />
-          </IconButton>
+          
         </Stack>
       </Stack>
       {openAddMembers && (

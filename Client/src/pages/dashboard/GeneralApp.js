@@ -4,17 +4,19 @@ import { Box, Stack, Typography } from "@mui/material";
 import Conversation from "../../components/conversation";
 import { useTheme } from "@mui/material/styles";
 import Contact from "../../components/Contact";
-import {  useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import SharedMessage from "../../components/SharedMessage";
 import StarredMessage from "../../components/StarredMessages";
 import useResponsive from "../../hooks/useResponsive";
-import NoChatSVG from "../../assets/Illustration/NoChat"
-
+import NoChatSVG from "../../assets/Illustration/NoChat";
 
 const GeneralApp = () => {
   const theme = useTheme();
   const { sidebar, chat_type } = useSelector((store) => store.app);
-  const {conversationId} = useSelector((state)=> state.conversation.direct_chat)
+  const { oneToOne, contact } = useSelector((store) => store.app.mobile);
+  const { conversationId } = useSelector(
+    (state) => state.conversation.direct_chat
+  );
 
   const isMobile = useResponsive("between", "md", "xs", "sm");
 
@@ -22,7 +24,44 @@ const GeneralApp = () => {
     <>
       <Stack direction={"row"} sx={{ width: "100%" }}>
         {/* {isMobile && <Conversation />} */}
-        <Chatss />
+        {isMobile && chat_type === "individual" && oneToOne === "chats" ? (
+          <Chatss />
+        ) : (
+          <></>
+        )}
+        {!isMobile && <Chatss />}
+
+        {isMobile && chat_type === "individual" && contact === null && oneToOne === "conversation" ? (
+          <Box
+            sx={{
+              height: "100%",
+              width: "100%",
+              backgroundColor:
+                theme.palette.mode === "light"
+                  ? "#F0F4FA"
+                  : theme.palette.background.default,
+            }}
+          >
+            {conversationId !== null && chat_type === "individual" ? (
+              <Conversation />
+            ) : (
+              <Stack
+                spacing={2}
+                sx={{ height: "100%", width: "100%" }}
+                alignItems={"center"}
+                justifyContent={"center"}
+              >
+                <NoChatSVG />
+                <Typography variant="subtitle2">
+                  Select a conversation or start a new one
+                </Typography>
+              </Stack>
+            )}
+          </Box>
+        ) : (
+          <></>
+        )}
+        
         {!isMobile && (
           <Box
             sx={{
@@ -36,16 +75,27 @@ const GeneralApp = () => {
                   : theme.palette.background.default,
             }}
           >
-            {conversationId !== null && chat_type === "individual" ? <Conversation />: 
-              <Stack spacing={2} sx={{height: "100%", width: "100%"}} alignItems={"center"} justifyContent={"center"}>
-                <NoChatSVG/>
-                <Typography variant="subtitle2">Select a conversation or start a new one</Typography>
+            {conversationId !== null && chat_type === "individual" ? (
+              <Conversation />
+            ) : (
+              <Stack
+                spacing={2}
+                sx={{ height: "100%", width: "100%" }}
+                alignItems={"center"}
+                justifyContent={"center"}
+              >
+                <NoChatSVG />
+                <Typography variant="subtitle2">
+                  Select a conversation or start a new one
+                </Typography>
               </Stack>
-            }
-            
+            )}
           </Box>
         )}
-        {sidebar.open &&
+
+        {isMobile && (contact === "onetoone" || contact === "group") ? <Contact />: <></>}
+
+        {!isMobile && sidebar.open &&
           (() => {
             switch (sidebar.type) {
               case "CONTACT":

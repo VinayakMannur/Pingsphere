@@ -11,6 +11,16 @@ const initialState = {
     message: null,
     severity: null,
   },
+  mobile: {
+    oneToOne: "chats",
+    group: null,
+    contact: null,
+  },
+  contactInfo:{
+    name: null,
+    phoneNumber: null,
+    groupsInCommon: [],
+  },
   users: [],
   friends: [],
   // requests: [],
@@ -56,7 +66,34 @@ const slice = createSlice({
     },
     updateConversation(state, action){
       state.chat_type = "group"
-    }
+    },
+    updateToOneToOneConversation(state, action){
+      state.mobile.oneToOne = "conversation"
+    },
+    updateOneToOneChats(state, action){
+      state.mobile.oneToOne = "chats"
+    },
+    updateGroupConversation(state, action){
+      state.mobile.group = "conversation"
+    },
+    updateGroupChats(state, action){
+      state.mobile.group = "chats"
+    },
+    updateContactNull(state, action){
+      state.mobile.contact = null
+    },
+    updateContactGroup(state, action){
+      state.mobile.contact = "group"
+    },
+    updateContactOneToOne(state, action){
+      state.mobile.contact = "onetoone"
+    },
+    updateContactInfo(state, action){
+      // console.log(action.payload);
+      state.contactInfo.name = `${action.payload.userDetails.firstName} ${action.payload.userDetails.lastName}`
+      state.contactInfo.phoneNumber = action.payload.userDetails.phonenumber
+      state.contactInfo.groupsInCommon = action.payload.commonGroupsDetails
+    },
   },
 });
 
@@ -158,5 +195,53 @@ export const SelectConversation = () => {
 export const UpdateConversation = () => {
   return (dispatch, getState) =>{
     dispatch(slice.actions.updateConversation())
+  }
+}
+
+export function UpdateToOneToOneConversation(){
+  return async (dispatch, getState)=>{
+    dispatch(slice.actions.updateToOneToOneConversation())
+  }
+}
+
+export function UpdateOneToOneChats(){
+  return async (dispatch, getState)=>{
+    dispatch(slice.actions.updateOneToOneChats())
+  }
+}
+
+export function UpdateGroupConversation(){
+  return async (dispatch, getState)=>{
+    dispatch(slice.actions.updateGroupConversation())
+  }
+}
+
+export function updateGroupChats(){
+  return async (dispatch, getState)=>{
+    dispatch(slice.actions.updateGroupChats())
+  }
+}
+
+export function UpdateContactNull(){
+  return async(dispatch, getState)=>{
+    dispatch(slice.actions.updateContactNull())
+  }
+}
+
+export function UpdateContactGroup(){
+  return async(dispatch, getState)=>{
+    dispatch(slice.actions.updateContactGroup())
+  }
+}
+
+export function UpdateContactOneToOne(){
+  return async(dispatch, getState)=>{
+    dispatch(slice.actions.updateContactOneToOne())
+  }
+}
+
+export const UpdateContactInfo = (data) =>{
+  return async(dispatch, getState) => {
+    dispatch(slice.actions.updateContactInfo(data))
   }
 }
