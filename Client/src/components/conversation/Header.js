@@ -305,7 +305,6 @@ const Header = () => {
         >
           
           <Box>
-            
             <StyledBadge
               overlap="circular"
               anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
@@ -333,50 +332,15 @@ const Header = () => {
           </Stack>
         </Stack>
         <Stack alignItems={"center"} direction={"row"} spacing={2}>
-          {chat_type === "group" && newlyAddedAdmins.includes(parseInt(user_id)) ? (
-            <>
-              <Tooltip title="Add members to group">
-                <IconButton
-                  onClick={() => {
-                    setOpenAddMembers(true);
-                  }}
-                >
-                  <UserCirclePlus
-                    size={20}
-                    style={{ color: theme.palette.primary.main }}
-                  />
-                </IconButton>
-              </Tooltip>
-              <Tooltip title="Make other members admin">
-                <IconButton onClick={()=>{
-                  setOpenNotAdminMembers(true)
-                }}>
-                  <UserCircleGear />
-                </IconButton>
-              </Tooltip>
-              <Tooltip title="Remove members from group">
-                <IconButton onClick={()=>{
-                  setOpenRemoveMembers(true)
-                }}>
-                  <UserCircleMinus size={20}
-                    style={{ color: theme.palette.primary.main }}
-                  />
-                </IconButton>
-              </Tooltip>
-            </>
-          ) : (
-            <>
-            <IconButton onClick={()=>{
-              if(isMobile){
-                dispatch(UpdateOneToOneChats())
-                dispatch(updateGroupChats())
-                dispatch(UpdateContactNull())
-              }
-            }}>
-              <CaretLeft/>
-            </IconButton></>
-          )}
-          
+          <IconButton onClick={()=>{
+            if(isMobile){
+              dispatch(UpdateOneToOneChats())
+              dispatch(updateGroupChats())
+              dispatch(UpdateContactNull())
+            }
+          }}>
+            <CaretLeft/>
+          </IconButton>
         </Stack>
       </Stack>
       {openAddMembers && (

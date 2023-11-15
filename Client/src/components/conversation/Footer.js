@@ -15,6 +15,7 @@ import Picker from "@emoji-mart/react";
 import { Actions } from "../../data";
 import { useDispatch, useSelector } from "react-redux";
 import { socket } from "../../socket";
+import useResponsive from "../../hooks/useResponsive";
 // import { PushToGrpConversation } from "../../redux/slices/conversation";
 
 const StyledInput = styled(TextField)(({ theme }) => ({
@@ -109,6 +110,7 @@ const Footer = () => {
   const { conversationId, to_user } = useSelector(
     (state) => state.conversation.direct_chat
   );
+  const isMobile = useResponsive("between", "md", "xs", "sm");
 
   function handleEmojiClick(emoji) {
     const input = inputRef.current;
@@ -149,7 +151,7 @@ const Footer = () => {
               zIndex: 10,
               position: "fixed",
               bottom: 82,
-              right: 81,
+              right: isMobile? 40: 81,
             }}
           >
             <Picker
