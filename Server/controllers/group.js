@@ -8,7 +8,7 @@ exports.getFriends = async (req, res, next) =>{
         const friendsList = await User.findByPk(userId,{
             attributes: ["friends"]
         })
-        console.log(friendsList.friends);
+        // console.log(friendsList.friends);
 
         
 

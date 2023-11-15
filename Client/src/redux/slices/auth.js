@@ -52,7 +52,7 @@ export function LoginUser(formValues) {
         }
       )
       .then((responce) => {
-        console.log(responce);
+        // console.log(responce);
         dispatch(
           slice.actions.logIn({
             isLoggedIn: true,
@@ -92,7 +92,7 @@ export function ResetPassword(formValues) {
         }
       )
       .then((responce) => {
-        console.log(responce);
+        // console.log(responce);
         dispatch(showSnackbar({severity: "success", message: responce.data.msg}))
       })
       .catch((error) => {
@@ -117,7 +117,7 @@ export function UpdatePassword(formValues) {
         }
       )
       .then((responce) => {
-        console.log(responce);
+        // console.log(responce);
         dispatch(
           slice.actions.logIn({
             isLoggedIn: true,
@@ -149,7 +149,7 @@ export function SignupUser(formValues) {
         }
       )
       .then((responce) => {
-        console.log(responce);
+        // console.log(responce);
         dispatch(slice.actions.updateSignupEmail({ email: formValues.email }));
         dispatch(
           slice.actions.updateIsLoading({ isLoading: false, error: false })
@@ -172,7 +172,7 @@ export function SignupUser(formValues) {
 }
 
 export function VerifyUser(formValues) {
-  console.log(formValues);
+  // console.log(formValues);
   return async (dispatch, getState) => {
     await axios
       .post(
@@ -187,7 +187,7 @@ export function VerifyUser(formValues) {
         }
       )
       .then((responce) => {
-        console.log(responce);
+        // console.log(responce);
         dispatch(slice.actions.updateSignupEmail({ email: '' }));
         dispatch(
           slice.actions.logIn({

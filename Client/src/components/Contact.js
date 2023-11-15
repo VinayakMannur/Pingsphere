@@ -215,7 +215,7 @@ const RemoveMembersDialog = ({ open, handleClose }) => {
 
   useEffect(() => {
     socket.emit("get_members_of_group", { groupId, user_id }, (data) => {
-      console.log(data);
+      // console.log(data);
       dispatch(FetchFriendsInGroup(data))
     });
   }, []);
@@ -472,7 +472,7 @@ const Contact = () => {
           {chat_type === "individual" ? 
             <>
               <Typography px={1} variant="body2">
-                1 group in common
+                Groups in common
               </Typography>
               {groupsInCommon.length > 0 ? groupsInCommon.map((grp)=>(
                 <Stack key={grp.id} direction={"row"} px={1} spacing={2} alignItems={"center"}>

@@ -181,7 +181,7 @@ const RemoveMembersDialog = ({ open, handleClose }) => {
 
   useEffect(() => {
     socket.emit("get_members_of_group", { groupId, user_id }, (data) => {
-      console.log(data);
+      // console.log(data);
       dispatch(FetchFriendsInGroup(data))
     });
   }, []);

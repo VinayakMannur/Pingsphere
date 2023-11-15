@@ -110,11 +110,11 @@ const slice = createSlice({
       state.group_chat.groupAdminId = action.payload.groupAdminId
     },
     pushToGrpConversation(state, action){
-      console.log(action.payload);
+      // console.log(action.payload);
       state.group_chat.grpConversation.push(action.payload)
     },
     fetchGrpChats(state, action){
-      console.log(action.payload);
+      // console.log(action.payload);
       const chat_history = action.payload.map((el) => {
         return {
           id: el.id,
@@ -197,7 +197,7 @@ export function FetchCurrentConversation(){
           }
       });
       dispatch(slice.actions.fetchCurrentConversation({chat_history: response.data.data}))
-      console.log(response.data.data); 
+      // console.log(response.data.data); 
     } catch (error) {
       console.error(error); 
     }

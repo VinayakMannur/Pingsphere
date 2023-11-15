@@ -31,7 +31,7 @@ const FriendsList = ({handleClose}) => {
   }, []);
 
   const { friends } = useSelector((state) => state.app);
-  console.log(friends);
+  // console.log(friends);
   return (
     <>
       {friends && friends.map((el, idx) => {
@@ -52,7 +52,7 @@ const FriendRequestList = () => {
   const { friendRequests } = useSelector((state) => state.app);
 
   // const { requests } = useSelector((state) => state.app);
-  console.log(friendRequests);
+  // console.log(friendRequests);
   return (
     <>
       {friendRequests && friendRequests.map((el, idx) => {

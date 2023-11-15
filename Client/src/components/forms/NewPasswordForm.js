@@ -10,6 +10,7 @@ import { Eye, EyeSlash } from "phosphor-react";
 import { useDispatch } from "react-redux";
 import { useSearchParams } from "react-router-dom";
 import { UpdatePassword } from "../../redux/slices/auth";
+import { showSnackbar } from "../../redux/slices/app";
 
 const NewPasswordForm = () => {
 
@@ -27,7 +28,8 @@ const NewPasswordForm = () => {
       if(password === confirmPassword){
         dispatch(UpdatePassword({password, uniqueId: searchParams.get("token")}));
       }else{
-        console.log("not equal");
+        // console.log("not equal");
+        dispatch(showSnackbar({severity: "warning", message: "Passwords aren't equal !"}))
       }     
     } catch (error) {
       console.log(error);

@@ -135,6 +135,9 @@ const SideBar = () => {
               ) : (
                 <IconButton
                   onClick={() => {
+                    if(el.index === 0 && isMobile){
+                      dispatch(UpdateOneToOneChats())
+                    }
                     setSelected(el.index);
                     navigate(getPath(el.index));
                     if(el.index === 1 && isMobile){

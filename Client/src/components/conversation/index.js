@@ -30,12 +30,12 @@ const Conversation = () => {
     if(chat_type === "individual"){
       socket.emit("get_direct_conversations", { user_id }, (data) => {
         //data is list of existing conversations
-        console.log(data);
+        // console.log(data);
         dispatch(FetchDirectConversation({data}))
       });
     }
     
-    console.log('runnned');
+    // console.log('runnned');
   }, [current_conversation, grpConversation]);
 
   return (

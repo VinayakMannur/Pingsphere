@@ -167,7 +167,7 @@ export const getFriends = () => {
       },
     })
       .then((response) => {
-        console.log(response);
+        // console.log(response);
         dispatch(slice.actions.updateFriends({ friends: response.data.data }));
       })
       .catch((error) => {
@@ -185,7 +185,7 @@ export const getFriendRequests = () => {
       },
     })
       .then((response) => {
-        console.log(response);
+        // console.log(response);
         dispatch(
           slice.actions.updateFriendRequests({ requests: response.data.data })
         );

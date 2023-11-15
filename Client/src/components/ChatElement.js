@@ -54,9 +54,9 @@ const ChatElement = ({
           if(isMobile){
             dispatch(UpdateGroupConversation())
           }
-          console.log("get_group_messages", id);
+          // console.log("get_group_messages", id);
           socket.emit("get_group_messages",{id}, (data)=>{
-            console.log(data);
+            // console.log(data);
             const adminName = `${data.grpAdmin.firstName} ${data.grpAdmin.lastName}`
             const groupAdminId = data.grpAdmin.id
             dispatch(UpdateGrpNameAdmin({groupId: id, groupName: name, groupAdmin: adminName, groupAdminId: groupAdminId}))

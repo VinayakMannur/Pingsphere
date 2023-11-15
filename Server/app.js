@@ -294,7 +294,7 @@ io.on("connection", async (socket) => {
     const from_user = await User.findByPk(from, {
       attributes: ["socket_id"]
     })
-    console.log("TOUSER", to_user.socket_id, "fromuser", from_user.socket_id);
+    // console.log("TOUSER", to_user.socket_id, "fromuser", from_user.socket_id);
     // emit incoming message - to user
 
     io.to(to_user.socket_id).emit("new_message",{

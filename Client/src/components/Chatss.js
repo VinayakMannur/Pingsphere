@@ -25,12 +25,12 @@ const Chatss = () => {
   const { conversations } = useSelector(
     (state) => state.conversation.direct_chat
   );
-    console.log(conversations);
+    // console.log(conversations);
   useEffect(() => {
     dispatch(SelectConversation())
     socket.emit("get_direct_conversations", { user_id }, (data) => {
       //data is list of existing conversations
-      console.log(data);
+      // console.log(data);
       dispatch(FetchDirectConversation({data}))
     });
   }, []);

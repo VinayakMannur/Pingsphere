@@ -175,7 +175,7 @@ exports.forgotPassword = async (req, res, next) =>{
 
         const uniqueId = uuidv4()
         const resetURL = `http://localhost:3000/auth/newpassword/?token=${uniqueId}`
-        console.log(uniqueId);
+        // console.log(uniqueId);
         //send mail
 
         let defaultClient = brevo.ApiClient.instance;
@@ -196,7 +196,7 @@ exports.forgotPassword = async (req, res, next) =>{
             sendSmtpEmail.headers = { "Some-Custom-Name": "unique-id-1234" };
             sendSmtpEmail.params = { "parameter": `${resetURL}`, "subject": "Hyy There!! Here's Your Link to Reset Your Password" };
             const data = await apiInstance.sendTransacEmail(sendSmtpEmail)
-            console.log('API called successfully. Returned data: ' + JSON.stringify(data));
+            // console.log('API called successfully. Returned data: ' + JSON.stringify(data));
             
         // mailService.sendEmail({
         //     from: "vinayakmannur20@gmail.com",
@@ -225,7 +225,7 @@ exports.resetPassword = async (req, res, next) =>{
     try {
         
         const {password, uniqueId} = req.body
-        console.log("?????",uniqueId);
+        // console.log("?????",uniqueId);
 
         const reset = await ResetPassword.findOne({
             where: { 
