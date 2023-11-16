@@ -51,8 +51,6 @@ const getMenuPath = (index) => {
     case 0:
       return "/profile";
     case 1:
-      return "/settings";
-    case 2:
       return "/auth/login";
     default:
       break;
@@ -212,12 +210,12 @@ const SideBar = () => {
                 <MenuItem
                   key={idx}
                   onClick={() => {
-                    handleClick();
+                    handleClick(idx+2);
                   }}
                 >
                   <Stack
                     onClick={() => {
-                      if (idx === 2) {
+                      if (idx === 1) {
                         dispatch(LogoutUser());
                         socket.emit("end", {user_id})
                       } else {

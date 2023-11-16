@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import {
   Autocomplete,
   Avatar,
+  Badge,
   Box,
   Button,
   Dialog,
@@ -482,8 +483,16 @@ const Contact = () => {
                 <Stack key={user.id} direction={"row"} px={1} spacing={2} alignItems={"center"}>
                   <Avatar alt={faker.name.firstName()} src={faker.image.avatar()} />
                   <Stack>
-                    <Typography variant="subtitle2">{`${user.firstName} ${user.lastName}`}</Typography>
+                    {user.id === user_id? <Typography variant="subtitle2">You</Typography>:
+                    <Typography variant="subtitle2">{`${user.firstName} ${user.lastName}`}</Typography>}
                   </Stack>
+                  <Box sx={{ marginLeft: 'auto' }} />
+                  {newlyAddedAdmins.includes(parseInt(user.id)) && 
+                  <Badge anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }} badgeContent="Admin" color="primary"/>}
+                  
                 </Stack>
               )):<></>}  
             </>

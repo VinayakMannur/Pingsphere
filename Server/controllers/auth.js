@@ -54,6 +54,26 @@ exports.sendOTP = async (req, res, next) => {
 
         const new_otp = otpGenerator.generate(6, { upperCaseAlphabets: false, specialChars: false, lowerCaseAlphabets: false })
         console.log("OTP", new_otp);
+
+        let defaultClient = brevo.ApiClient.instance;
+
+        let apiKey = defaultClient.authentications['api-key'];
+        apiKey.apiKey = process.env.SG_KEY;
+
+        let apiInstance = new brevo.TransactionalEmailsApi();
+        let sendSmtpEmail = new brevo.SendSmtpEmail();
+
+        sendSmtpEmail.subject = "{{params.subject}}";
+        sendSmtpEmail.htmlContent = "<html><body><h1>OTP to verify your email {{params.parameter}}</h1></body></html>";
+        sendSmtpEmail.sender = { "name": "Vinayak", "email": "vinayakmannur20@gmail.com" };
+        sendSmtpEmail.to = [
+            { "email": `${req.body.email}`, "name": "Name" }
+        ];
+        sendSmtpEmail.replyTo = { "email": "vinayakmannur20@gmail.com", "name": "Vinayak" };
+        sendSmtpEmail.headers = { "Some-Custom-Name": "unique-id-1234" };
+        sendSmtpEmail.params = { "parameter": `${new_otp}`, "subject": "Hyy There!! Here's Your OTP to Login" };
+        const data = await apiInstance.sendTransacEmail(sendSmtpEmail)
+
         const otp_expiry_time = Date.now() + 10*60*1000 //10min
 
         const updating_otp = await User.findByPk(userId)
@@ -180,23 +200,23 @@ exports.forgotPassword = async (req, res, next) =>{
 
         let defaultClient = brevo.ApiClient.instance;
 
-            let apiKey = defaultClient.authentications['api-key'];
-            apiKey.apiKey = process.env.SG_KEY;
+        let apiKey = defaultClient.authentications['api-key'];
+        apiKey.apiKey = process.env.SG_KEY;
 
-            let apiInstance = new brevo.TransactionalEmailsApi();
-            let sendSmtpEmail = new brevo.SendSmtpEmail();
+        let apiInstance = new brevo.TransactionalEmailsApi();
+        let sendSmtpEmail = new brevo.SendSmtpEmail();
 
-            sendSmtpEmail.subject = "{{params.subject}}";
-            sendSmtpEmail.htmlContent = "<html><body><h1>Click on the link provided and reset your password {{params.parameter}}</h1></body></html>";
-            sendSmtpEmail.sender = { "name": "Vinayak", "email": "vinayakmannur20@gmail.com" };
-            sendSmtpEmail.to = [
-                { "email": `${req.body.email}`, "name": "Name" }
-            ];
-            sendSmtpEmail.replyTo = { "email": "vinayakmannur20@gmail.com", "name": "Vinayak" };
-            sendSmtpEmail.headers = { "Some-Custom-Name": "unique-id-1234" };
-            sendSmtpEmail.params = { "parameter": `${resetURL}`, "subject": "Hyy There!! Here's Your Link to Reset Your Password" };
-            const data = await apiInstance.sendTransacEmail(sendSmtpEmail)
-            // console.log('API called successfully. Returned data: ' + JSON.stringify(data));
+        sendSmtpEmail.subject = "{{params.subject}}";
+        sendSmtpEmail.htmlContent = "<html><body><h1>Click on the link provided and reset your password {{params.parameter}}</h1></body></html>";
+        sendSmtpEmail.sender = { "name": "Vinayak", "email": "vinayakmannur20@gmail.com" };
+        sendSmtpEmail.to = [
+            { "email": `${req.body.email}`, "name": "Name" }
+        ];
+        sendSmtpEmail.replyTo = { "email": "vinayakmannur20@gmail.com", "name": "Vinayak" };
+        sendSmtpEmail.headers = { "Some-Custom-Name": "unique-id-1234" };
+        sendSmtpEmail.params = { "parameter": `${resetURL}`, "subject": "Hyy There!! Here's Your Link to Reset Your Password" };
+        const data = await apiInstance.sendTransacEmail(sendSmtpEmail)
+        // console.log('API called successfully. Returned data: ' + JSON.stringify(data));
             
         // mailService.sendEmail({
         //     from: "vinayakmannur20@gmail.com",

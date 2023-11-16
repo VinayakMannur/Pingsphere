@@ -3,6 +3,7 @@ const User = require("../models/user");
 const filterObj = require("../util/filterObj");
 const { Op } = require("sequelize");
 
+
 exports.updatedMe = async (req, res, next) =>{
     try {
 
@@ -101,6 +102,28 @@ exports.getRequests = async (req, res, next) =>{
         // res.status(200).json({data: requests[2].senderUsers})
 
         res.status(200).json({status: "success", data: requests, msg: "Friend requests found successfully !"})
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send({status: "error", msg: "Internal Server Error!!" })
+    }
+}
+
+exports.handleFileUpload = async(req, res, next) =>{
+    try {
+        const file = req
+        console.log("file",file);
+
+        // if (!file) {
+        //     return res.status(400).json({ error: 'No file uploaded' });
+        //   }
+
+        // const profile = await User.update({avatar: file.buffer},{
+        //     where:{
+        //         id: req.user.userId
+        //     }
+        // })
+        // console.log("profile",profile);
 
     } catch (error) {
         console.log(error);

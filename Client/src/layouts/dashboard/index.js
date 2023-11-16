@@ -15,7 +15,7 @@ const DashboardLayout = () => {
   const {isLoggedIn} = useSelector((state) => state.auth)
   const {conversationId} = useSelector((state)=> state.conversation.direct_chat)
   const {groupId} = useSelector((state)=>state.conversation.group_chat)
-  const user_id = window.localStorage.getItem("user_id")
+  const user_id = parseInt(window.localStorage.getItem("user_id"))
   const isMobile = useResponsive("between", "md", "xs", "sm");
   // console.log("fuckkkkkkkkkk id ", groupId);
   useEffect(()=>{
@@ -30,7 +30,7 @@ const DashboardLayout = () => {
       }
 
       window.onload()
-
+      const user_id = parseInt(window.localStorage.getItem("user_id"))
       if(!socket){
         connectSocket(user_id)
       }

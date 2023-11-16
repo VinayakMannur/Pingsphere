@@ -281,3 +281,23 @@ export const UpdateSelfInfo = (data) =>{
     dispatch(slice.actions.updateSelfInfo(data))
   }
 }
+
+export const UpdateProfile = (formData) => {
+  return async (dispatch, getState) => {
+    await axios.post("/user/upload",{
+      formData
+    }, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        authToken: getState().auth.token,
+      },
+    })
+      .then((response) => {
+        console.log(response);
+
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+};

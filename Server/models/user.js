@@ -18,7 +18,7 @@ const User = sequelize.define("user", {
     allowNull: false,
   },
   avatar: {
-    type: Sequelize.STRING,
+    type: Sequelize.BLOB,
   },
   email: {
     type: Sequelize.STRING,
