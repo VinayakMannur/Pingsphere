@@ -310,7 +310,7 @@ const Header = () => {
               anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
               variant="dot"
             >
-              <Avatar alt={faker.name.firstName()} src={faker.image.avatar()} />
+              <Avatar alt={faker.name.firstName()} src={faker.image.city()} />
             </StyledBadge>
           </Box>
           <Stack spacing={0.1}>

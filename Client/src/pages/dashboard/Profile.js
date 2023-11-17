@@ -140,7 +140,7 @@ const Profile = () => {
                 <Stack position="relative" alignItems="flex-end">
                   <Avatar
                     alt={faker.name.firstName()}
-                    src={faker.image.avatar()}
+                    src={faker.image.city()}
                     sx={{ width: 150, height: 150 }}
                   />
                   <label htmlFor="file-input">
@@ -167,7 +167,7 @@ const Profile = () => {
             <Stack alignItems={"center"} direction={"row"} p={1} spacing={3}>
               {/* <Avatar
                 alt={faker.name.firstName()}
-                src={faker.image.avatar()}
+                src={faker.image.city()}
                 sx={{ height: 80, width: 80 }}
               /> */}
               <Stack direction={"column"} spacing={0.5}>

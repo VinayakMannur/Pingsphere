@@ -291,7 +291,6 @@ const Contact = () => {
         dispatch(UpdateGroupInfo(data))
       })
     }
-    
   },[])
 
   const {name, phoneNumber, groupsInCommon} = useSelector((state)=> state.app.contactInfo)
@@ -357,7 +356,7 @@ const Contact = () => {
             height: "100%",
             position: "relative",
             flexGrow: 1,
-            overflowY: "scroll",
+            overflowY: 'scroll',
             scrollbarWidth: "thin",
             "&::-webkit-scrollbar": {
               width: "0.4em",
@@ -378,7 +377,7 @@ const Contact = () => {
           <Stack alignItems={"center"} direction={"row"} p={1} spacing={4}>
             <Avatar
               alt={faker.name.firstName()}
-              src={faker.image.avatar()}
+              src={faker.image.city()}
               sx={{ height: 64, width: 64 }}
             />
 
@@ -467,7 +466,7 @@ const Contact = () => {
               </Typography>
               {groupsInCommon.length > 0 ? groupsInCommon.map((grp)=>(
                 <Stack key={grp.id} direction={"row"} px={1} spacing={2} alignItems={"center"}>
-                  <Avatar alt={faker.name.firstName()} src={faker.image.avatar()} />
+                  <Avatar alt={faker.name.firstName()} src={faker.image.city()} />
                   <Stack>
                     <Typography variant="subtitle2">{grp.groupName}</Typography>
                   </Stack>
@@ -481,7 +480,7 @@ const Contact = () => {
               </Typography>
               {users.length > 0 ? users.map((user)=>(
                 <Stack key={user.id} direction={"row"} px={1} spacing={2} alignItems={"center"}>
-                  <Avatar alt={faker.name.firstName()} src={faker.image.avatar()} />
+                  <Avatar alt={faker.name.firstName()} src={faker.image.city()} />
                   <Stack>
                     {user.id === user_id? <Typography variant="subtitle2">You</Typography>:
                     <Typography variant="subtitle2">{`${user.firstName} ${user.lastName}`}</Typography>}

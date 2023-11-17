@@ -90,10 +90,10 @@ const ChatElement = ({
               anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
               variant="dot"
             >
-              <Avatar src={faker.image.avatar()} />
+              <Avatar src={faker.image.city()} />
             </StyledBadge>
           ) : (
-            <Avatar src={faker.image.avatar()} />
+            <Avatar src={faker.image.city()} />
           )}
           {to_user_name === name ? (
             <Stack spacing={0.2}>

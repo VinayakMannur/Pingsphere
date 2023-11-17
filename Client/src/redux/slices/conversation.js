@@ -52,8 +52,8 @@ const slice = createSlice({
           user_id: el.receiverId,
           name: `${el.receiverFirstName} ${el.receiverLastName}`,
           online: el.receiverStatus === "Online",
-          img: faker.image.avatar(),
-          msg: el.text,
+          img: faker.image.city(),
+          msg: `${el.text.slice(0, 10)}...`,
           time: time,
           unread: 0,
           pinned: false,
@@ -89,13 +89,26 @@ const slice = createSlice({
       state.direct_chat.current_conversation = null
     },
     updateGroupList(state, action){
-      const list = action.payload.map((el)=>{
+      // console.log(action.payload);
+      const {gropInfo , formattedMessages} = action.payload
+      const list = gropInfo.map((el, idx)=>{
+
+        const dateString = formattedMessages[idx].latestMessage.createdAt
+        const date = new Date(dateString);
+        const hours = date.getHours();
+        const minutes = date.getMinutes();
+        let formattedHours = hours % 12;
+        formattedHours = formattedHours || 12;
+        const period = hours >= 12 ? "PM" : "AM";
+        const time = `${formattedHours}:${minutes} ${period}`
+
+
         return {
           id: el.id,
-          img: faker.image.avatar(),
+          img: faker.image.city(),
           name: el.groupName,
-          msg: faker.music.songName(),
-          time: "9:36",
+          msg: `~${formattedMessages[idx].latestMessage.sender.firstName}: ${formattedMessages[idx].latestMessage.text.slice(0, 10)}...`,
+          time: time,
           unread: 0,
           pinned: false,
           online: true,

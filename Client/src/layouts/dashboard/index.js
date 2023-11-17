@@ -64,6 +64,10 @@ const DashboardLayout = () => {
         // }
       })
 
+      socket.on("start_chat_error",(data)=>{
+        dispatch(showSnackbar({severity: "warning", message: data.msg}))
+      })
+
       socket.on("new_message", (data)=>{
         // console.log(data);
         const id = parseInt(data.message.id)

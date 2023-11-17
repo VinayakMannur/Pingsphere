@@ -167,7 +167,7 @@ const GroupChats = () => {
           sx={{
             height: "100%",
             flexGrow: 1,
-            overflowY: "scroll",
+            overflowY: 'scroll', 
             scrollbarWidth: "thin",
             "&::-webkit-scrollbar": {
               width: "0.4em",
