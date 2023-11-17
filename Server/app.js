@@ -2,7 +2,6 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const { Server } = require("socket.io");
-const helmet = require('helmet')
 
 
 
@@ -33,11 +32,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false })); //if error make it to true
 
 app.use(allRoutes);
-
-app.use(helmet({
-  contentSecurityPolicy: false,
-})
-);
 
 //assoications
 User.hasMany(ResetPassword);
