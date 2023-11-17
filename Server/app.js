@@ -4,10 +4,7 @@ const cors = require("cors");
 const { Server } = require("socket.io");
 const helmet = require('helmet')
 
-app.use(helmet({
-      contentSecurityPolicy: false,
-    })
-  );
+
 
 require("dotenv").config();
 
@@ -37,7 +34,10 @@ app.use(bodyParser.urlencoded({ extended: false })); //if error make it to true
 
 app.use(allRoutes);
 
-
+app.use(helmet({
+  contentSecurityPolicy: false,
+})
+);
 
 //assoications
 User.hasMany(ResetPassword);
