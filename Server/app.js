@@ -2,6 +2,12 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const { Server } = require("socket.io");
+const helmet = require('helmet')
+
+app.use(helmet({
+      contentSecurityPolicy: false,
+    })
+  );
 
 require("dotenv").config();
 
