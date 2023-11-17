@@ -32,7 +32,7 @@ import {
 } from "phosphor-react";
 import { faker } from "@faker-js/faker";
 import StyledBadge from "../StyleBadge";
-import { ToggleSidebar, UpdateContactGroup, UpdateContactNull, UpdateContactOneToOne, UpdateOneToOneChats, updateGroupChats } from "../../redux/slices/app";
+import { FirstBarTrue, ToggleSidebar, UpdateContactGroup, UpdateContactNull, UpdateContactOneToOne, UpdateOneToOneChats, updateGroupChats } from "../../redux/slices/app";
 import { useDispatch, useSelector } from "react-redux";
 import { socket } from "../../socket";
 import { FetchFriendsInGroup, FetchFriendsNotAdmin, FriendsNotInGrp, RestrictMembers } from "../../redux/slices/conversation";
@@ -337,6 +337,7 @@ const Header = () => {
               dispatch(UpdateOneToOneChats())
               dispatch(updateGroupChats())
               dispatch(UpdateContactNull())
+              dispatch(FirstBarTrue())
             }
           }}>
             <CaretLeft/>

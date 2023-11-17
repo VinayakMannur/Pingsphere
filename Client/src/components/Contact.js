@@ -385,7 +385,7 @@ const Contact = () => {
               <Typography variant="article">
                 {chat_type === "individual" ? name: grpName}
               </Typography>
-              <Typography variant="body2">{chat_type === "individual" ? phoneNumber: `Created by ${groupAdmin}`}</Typography>
+              <Typography variant="body2">{chat_type === "individual" ? `+91 ${phoneNumber}`: `Created by ${groupAdmin}`}</Typography>
             </Stack>
           </Stack>
           <Divider />

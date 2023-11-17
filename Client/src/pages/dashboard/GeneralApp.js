@@ -34,7 +34,7 @@ const GeneralApp = () => {
         {isMobile && chat_type === "individual" && contact === null && oneToOne === "conversation" ? (
           <Box
             sx={{
-              height: "100%",
+              height: isMobile?"100vh":"100%",
               width: "100%",
               backgroundColor:
                 theme.palette.mode === "light"

@@ -37,6 +37,7 @@ const initialState = {
     email: null,
     phoneNumber: null
   },
+  firstBar: true
 };
 
 const slice = createSlice({
@@ -117,7 +118,13 @@ const slice = createSlice({
       state.selfInfo.name = name
       state.selfInfo.email = action.payload.email
       state.selfInfo.phoneNumber = action.payload.phonenumber
-    }
+    },
+    firstBarTrue(state, action){
+      state.firstBar = true
+    },
+    firstBarFalse(state, action){
+      state.firstBar = false
+    },
   },
 });
 
@@ -301,3 +308,15 @@ export const UpdateProfile = (formData) => {
       });
   };
 };
+
+export function FirstBarTrue(){
+  return (dispatch, getState) => {
+    dispatch(slice.actions.firstBarTrue())
+  }
+}
+
+export function FirstBarFalse(){
+  return (dispatch, getState) => {
+    dispatch(slice.actions.firstBarFalse())
+  }
+}

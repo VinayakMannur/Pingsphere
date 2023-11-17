@@ -3,7 +3,7 @@ import { Avatar, Badge, Box, Stack, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import StyledBadge from "./StyleBadge";
 import { useDispatch, useSelector } from "react-redux";
-import { SelectConversation, UpdateConversation, UpdateGroupConversation, UpdateToOneToOneConversation } from "../redux/slices/app";
+import { FirstBarFalse, SelectConversation, UpdateConversation, UpdateGroupConversation, UpdateToOneToOneConversation } from "../redux/slices/app";
 import {
   EmptyCurrentConversation,
   FetchGrpChats,
@@ -53,6 +53,7 @@ const ChatElement = ({
         if(chat_type === "group"){
           if(isMobile){
             dispatch(UpdateGroupConversation())
+            dispatch(FirstBarFalse())
           }
           // console.log("get_group_messages", id);
           socket.emit("get_group_messages",{id}, (data)=>{
@@ -67,6 +68,7 @@ const ChatElement = ({
         else{
           if(isMobile){
             dispatch(UpdateToOneToOneConversation())
+            dispatch(FirstBarFalse())
           }
           dispatch(
             UpdateConversationId({

@@ -48,7 +48,7 @@ const Group = () => {
         {isMobile && chat_type === "group" && contact === null && group === "conversation" ? (
           <Box
             sx={{
-              height: "100%",
+              height: isMobile?"100vh":"100%",
               width: "100%",
               backgroundColor:
                 theme.palette.mode === "light"

@@ -13,6 +13,7 @@ const DashboardLayout = () => {
   const dispatch = useDispatch()
 
   const {isLoggedIn} = useSelector((state) => state.auth)
+  const {firstBar} = useSelector((state) => state.app)
   const {conversationId} = useSelector((state)=> state.conversation.direct_chat)
   const {groupId} = useSelector((state)=>state.conversation.group_chat)
   const user_id = parseInt(window.localStorage.getItem("user_id"))
@@ -143,7 +144,9 @@ const DashboardLayout = () => {
 
   return (
     <Stack direction={"row"}>
-      <SideBar />
+      {isMobile && firstBar ? <SideBar />: <></>}
+      {!isMobile && <SideBar />}
+      
       <Outlet />
     </Stack>
   );
