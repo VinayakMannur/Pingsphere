@@ -61,6 +61,7 @@ const SignupForm = () => {
           fullWidth
           id="email"
           label="Email"
+          type="email"
           variant="outlined"
           onInput={(e) => setEmail(e.target.value)}
           autoComplete="email"

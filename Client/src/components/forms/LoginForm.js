@@ -37,6 +37,7 @@ const LoginForm = () => {
             required
             fullWidth
             id="email"
+            type="email"
             label="Email"
             variant="outlined"
             onInput={(e) => setEmail(e.target.value)}

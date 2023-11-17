@@ -25,6 +25,7 @@ const ResetForm = () => {
           <TextField
             required
             fullWidth
+            type="email"
             id="email"
             label="Email"
             variant="outlined"
