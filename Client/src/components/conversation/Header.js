@@ -5,7 +5,7 @@ import {
   Avatar,
   Typography,
   IconButton,
-  Divider,
+  // Divider,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -15,27 +15,18 @@ import {
   Button,
   TextField,
   Slide,
-  Tooltip,
+  // Tooltip,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import {
-  CaretDown,
   CaretLeft,
-  LockLaminated,
-  MagnifyingGlass,
-  Phone,
-  Plus,
-  UserCircleGear,
-  UserCircleMinus,
-  UserCirclePlus,
-  VideoCamera,
 } from "phosphor-react";
 import { faker } from "@faker-js/faker";
 import StyledBadge from "../StyleBadge";
 import { FirstBarTrue, ToggleSidebar, UpdateContactGroup, UpdateContactNull, UpdateContactOneToOne, UpdateOneToOneChats, updateGroupChats } from "../../redux/slices/app";
 import { useDispatch, useSelector } from "react-redux";
 import { socket } from "../../socket";
-import { FetchFriendsInGroup, FetchFriendsNotAdmin, FriendsNotInGrp, RestrictMembers } from "../../redux/slices/conversation";
+import { FetchFriendsInGroup, FetchFriendsNotAdmin, FriendsNotInGrp } from "../../redux/slices/conversation";
 import useResponsive from "../../hooks/useResponsive";
 
 const Transition = React.forwardRef(function Transition(props, ref) {

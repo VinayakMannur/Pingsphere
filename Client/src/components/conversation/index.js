@@ -1,4 +1,4 @@
-import React, {  useLayoutEffect, useRef, useState } from "react";
+import React, {  useLayoutEffect, useRef } from "react";
 import { Box, Stack } from "@mui/material";
 import Header from "./Header";
 import Footer from "./Footer";
@@ -16,7 +16,7 @@ const Conversation = () => {
   const {current_conversation} = useSelector((state)=> state.conversation.direct_chat)
   const {grpConversation} = useSelector((state)=> state.conversation.group_chat)
   const {chat_type} = useSelector((state)=>state.app)
-  const isMobile = useResponsive("between", "md", "xs", "sm");
+  // const isMobile = useResponsive("between", "md", "xs", "sm");
 
   const scrollToBottom = () => {
     if (scrollContainerRef.current) {

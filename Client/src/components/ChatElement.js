@@ -3,7 +3,7 @@ import { Avatar, Badge, Box, Stack, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import StyledBadge from "./StyleBadge";
 import { useDispatch, useSelector } from "react-redux";
-import { FirstBarFalse, SelectConversation, UpdateConversation, UpdateGroupConversation, UpdateToOneToOneConversation } from "../redux/slices/app";
+import { FirstBarFalse, SelectConversation, UpdateGroupConversation, UpdateToOneToOneConversation } from "../redux/slices/app";
 import {
   EmptyCurrentConversation,
   FetchGrpChats,
@@ -12,7 +12,6 @@ import {
   UpdateGrpNameAdmin,
 } from "../redux/slices/conversation";
 import { socket } from "../socket";
-import { useEffect } from "react";
 import useResponsive from "../hooks/useResponsive";
 
 const ChatElement = ({

@@ -2,12 +2,12 @@ import React from "react";
 import { Box, Stack } from "@mui/material";
 
 import {
-  DocMsg,
-  LinkMsg,
-  MediaMsg,
-  ReplyMsg,
+  // DocMsg,
+  // LinkMsg,
+  // MediaMsg,
+  // ReplyMsg,
   TextMsg,
-  Timeline,
+  // Timeline,
 } from "./MsgTypes";
 import { useSelector } from "react-redux";
 
