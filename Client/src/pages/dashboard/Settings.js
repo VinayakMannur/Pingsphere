@@ -82,7 +82,7 @@ const Settings = () => {
             <Stack alignItems={"center"} direction={"row"} p={1} spacing={3}>
               <Avatar
                 alt={faker.name.firstName()}
-                src={faker.image.avatar()}
+                src={faker.image.city()}
                 sx={{ height: 64, width: 64 }}
               />
               <Stack direction={"column"} spacing={0.5}>
