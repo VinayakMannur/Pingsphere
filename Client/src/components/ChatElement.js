@@ -42,12 +42,7 @@ const ChatElement = ({
       sx={{
         width: "100%",
         borderRadius: 2,
-        backgroundColor:
-          to_user_name === name
-            ? theme.palette.primary.main
-            : theme.palette.mode === "light"
-            ? "#fff"
-            : theme.palette.background.default,
+        backgroundColor: to_user_name === name || groupName === name ? theme.palette.primary.main : theme.palette.mode === "light" ? "#fff" : theme.palette.background.default,
       }}
       onClick={() => {
         if(chat_type === "group"){
@@ -97,7 +92,7 @@ const ChatElement = ({
           ) : (
             <Avatar src={faker.image.city()} />
           )}
-          {to_user_name === name ? (
+          {to_user_name === name  || groupName === name? (
             <Stack spacing={0.2}>
               <Typography variant="subtitle2" color={"#fff"}>
                 {name}
