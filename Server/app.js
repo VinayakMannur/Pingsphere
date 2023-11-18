@@ -197,7 +197,7 @@ io.on("connection", async (socket) => {
 
   //fire when any user logs in to get the history of his conversation
   socket.on("get_direct_conversations", async ({user_id}, callback)=>{
-    // console.log("get all friends list of this useriD",user_id);
+    console.log("get all friends list of this useriD",user_id);
     try {
       const all_friends = await User.findByPk(user_id,{
         attributes: ["friends"]
@@ -227,7 +227,7 @@ io.on("connection", async (socket) => {
           type: sequelize.QueryTypes.SELECT, 
         });
     
-        // console.log("this is friends deatails",friendsDetails);
+        console.log("this is friends deatails", friendsDetails);
         //get all conversation of user of uder_id
         //inside participents in onetoonemessages table get all the things where participents is user_id and even the names of all participenst where the user_id is linked
         // get user firstname last name id email status
@@ -235,6 +235,7 @@ io.on("connection", async (socket) => {
         callback(friendsDetails)
       }
       else{
+        console.log("this is friends deatails", friendsDetails);
         callback([]);
       }
     } catch (error) {
@@ -433,6 +434,7 @@ io.on("connection", async (socket) => {
   })
 
   socket.on("get_group_list", async ({user_id}, callback)=>{
+    console.log("get_group_list",user_id);
     try {
       const userId = parseInt(user_id)
 
@@ -485,7 +487,7 @@ io.on("connection", async (socket) => {
   
       const formattedMessages = latestMessages.filter((message) => message !== null);
 
-
+      console.log("????????????????",gropInfo, formattedMessages);
       callback({gropInfo, formattedMessages})
     } catch (error) {
       console.log(error);
