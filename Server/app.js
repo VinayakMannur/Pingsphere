@@ -2,9 +2,8 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const { Server } = require("socket.io");
-
-
-
+const helmet = require('helmet')
+const path = require('path');
 require("dotenv").config();
 
 const sequelize = require("./util/database");
@@ -32,6 +31,44 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false })); //if error make it to true
 
 app.use(allRoutes);
+
+app.use(helmet({
+    contentSecurityPolicy: false,
+  })
+);
+
+const _dirname = path.dirname("ChatAppdemo")
+const reactPath = path.join(_dirname,'../Client/build')
+
+app.use(express.static(reactPath))
+
+app.get('/',(req,res)=>{
+  res.sendFile(
+      path.join(__dirname,"../Client/build/index.html"),(err)=>{
+          if(err){
+              res.status(500).send(err)
+          }
+      }
+  )
+})
+app.get('/app',(req,res)=>{
+  res.sendFile(
+      path.join(__dirname,"../Client/build/index.html"),(err)=>{
+          if(err){
+              res.status(500).send(err)
+          }
+      }
+  )
+})
+app.get('/group',(req,res)=>{
+  res.sendFile(
+      path.join(__dirname,"../Client/build/index.html"),(err)=>{
+          if(err){
+              res.status(500).send(err)
+          }
+      }
+  )
+})
 
 //assoications
 User.hasMany(ResetPassword);
@@ -83,8 +120,8 @@ const { log } = require("console");
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    // origin: "http://localhost:3000",
-    origin: "https://pingsphere.netlify.app",
+    origin: "http://localhost:5000",
+    // origin: "https://pingsphere.netlify.app",
     methods: ["GET", "POST"],
   },
 });
@@ -197,7 +234,7 @@ io.on("connection", async (socket) => {
 
   //fire when any user logs in to get the history of his conversation
   socket.on("get_direct_conversations", async ({user_id}, callback)=>{
-    console.log("get all friends list of this useriD",user_id);
+    // console.log("get all friends list of this useriD",user_id);
     try {
       const all_friends = await User.findByPk(user_id,{
         attributes: ["friends"]
@@ -227,7 +264,7 @@ io.on("connection", async (socket) => {
           type: sequelize.QueryTypes.SELECT, 
         });
     
-        console.log("this is friends deatails", friendsDetails);
+        // console.log("this is friends deatails", friendsDetails);
         //get all conversation of user of uder_id
         //inside participents in onetoonemessages table get all the things where participents is user_id and even the names of all participenst where the user_id is linked
         // get user firstname last name id email status
@@ -235,7 +272,7 @@ io.on("connection", async (socket) => {
         callback(friendsDetails)
       }
       else{
-        console.log("this is friends deatails", friendsDetails);
+        // console.log("this is friends deatails");
         callback([]);
       }
     } catch (error) {
@@ -434,7 +471,7 @@ io.on("connection", async (socket) => {
   })
 
   socket.on("get_group_list", async ({user_id}, callback)=>{
-    console.log("get_group_list",user_id);
+    // console.log("get_group_list",user_id);
     try {
       const userId = parseInt(user_id)
 
@@ -487,7 +524,7 @@ io.on("connection", async (socket) => {
   
       const formattedMessages = latestMessages.filter((message) => message !== null);
 
-      console.log("????????????????",gropInfo, formattedMessages);
+      // console.log("????????????????",gropInfo, formattedMessages);
       callback({gropInfo, formattedMessages})
     } catch (error) {
       console.log(error);
@@ -828,8 +865,8 @@ io.on("connection", async (socket) => {
 })
 
 sequelize
-  .sync({ force: true })
-  // .sync();
+  // .sync({ force: true })
+  .sync();
 
 server.listen(port || 5000, () => {
   console.log(`Pingsphere server running on port ${port}`);

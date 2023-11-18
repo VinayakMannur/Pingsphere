@@ -91,10 +91,11 @@ const slice = createSlice({
     updateGroupList(state, action){
       // console.log(action.payload);
       const {gropInfo , formattedMessages} = action.payload
-      const list = gropInfo.map((el, idx)=>{
 
-        const dateString = formattedMessages[idx].latestMessage.createdAt
-        const date = new Date(dateString);
+      const list = gropInfo.map((el, idx)=>{
+        const formattedMessage = formattedMessages[idx] || {};
+        const dateString = formattedMessage.latestMessage?.createdAt || ''
+        const date = dateString ? new Date(dateString) : new Date();
         const hours = date.getHours();
         const minutes = date.getMinutes();
         let formattedHours = hours % 12;
@@ -107,7 +108,7 @@ const slice = createSlice({
           id: el.id,
           img: faker.image.city(),
           name: el.groupName,
-          msg: `~${formattedMessages[idx].latestMessage.sender.firstName}: ${formattedMessages[idx].latestMessage.text.slice(0, 10)}...`,
+          msg: `~${formattedMessage.latestMessage?.sender?.firstName || ''}: ${formattedMessage.latestMessage?.text?.slice(0, 10) || ''}...`,
           time: time,
           unread: 0,
           pinned: false,
