@@ -25,7 +25,7 @@ const Group = () => {
   useEffect(() => {
     dispatch(UpdateConversation());
     socket.emit("get_group_list", { user_id }, (data) => {
-      // console.log(data);
+      console.log(data);
       dispatch(UpdateGroupList(data));
     });
   }, []);
