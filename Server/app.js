@@ -865,8 +865,8 @@ io.on("connection", async (socket) => {
 })
 
 sequelize
-  // .sync({ force: true })
-  .sync();
+  .sync({ force: true })
+  // .sync();
 
 server.listen(port || 5000, () => {
   console.log(`Pingsphere server running on port ${port}`);
