@@ -129,10 +129,12 @@ const DashboardLayout = () => {
       socket?.off("request_accepted")
       socket?.off("request_sent")
       socket?.off("start_chat")
+      socket?.off("start_chat_error")
       socket?.off("new_message")
       socket?.off("group_created")
       socket?.off("added_to_group")
       socket?.off("removed_from_group")
+      socket?.off("message_from_group")
       socket?.off("made_admin")
     }
 
