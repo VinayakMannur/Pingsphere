@@ -273,7 +273,7 @@ io.on("connection", async (socket) => {
           type: sequelize.QueryTypes.SELECT, 
         });
     
-        // console.log("this is friends deatails", friendsDetails);
+        console.log("this is friends deatails", friendsDetails);
         //get all conversation of user of uder_id
         //inside participents in onetoonemessages table get all the things where participents is user_id and even the names of all participenst where the user_id is linked
         // get user firstname last name id email status
@@ -874,8 +874,8 @@ io.on("connection", async (socket) => {
 })
 
 sequelize
-  .sync({ force: true })
-  // .sync();
+  // .sync({ force: true })
+  .sync()
 
 server.listen(port || 5000, () => {
   console.log(`Pingsphere server running on port ${port}`);
