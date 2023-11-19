@@ -35,7 +35,7 @@ const slice = createSlice({
   reducers: {
     fetchDirectConversation(state, action) {
       const responseData = action.payload.data;
-      // console.log(action.payload);
+      console.log("??????????????????????/",action.payload, responseData);
       const list = responseData.map((el) => {
         // this user must contain the user_id of the other participent not the one who is logged in
         // console.log(el);
