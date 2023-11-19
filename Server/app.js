@@ -129,7 +129,7 @@ const { log } = require("console");
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "http://3.84.228.149:5000",
+    origin: "http://3.84.228.149",
     // origin: "https://pingsphere.netlify.app",
   },
 });
