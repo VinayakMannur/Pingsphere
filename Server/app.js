@@ -69,6 +69,15 @@ app.get('/group',(req,res)=>{
       }
   )
 })
+app.get('/auth/verify',(req,res)=>{
+  res.sendFile(
+      path.join(__dirname,"../Client/build/index.html"),(err)=>{
+          if(err){
+              res.status(500).send(err)
+          }
+      }
+  )
+})
 
 //assoications
 User.hasMany(ResetPassword);
