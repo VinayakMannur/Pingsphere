@@ -15,8 +15,8 @@ const DashboardLayout = () => {
   const {isLoggedIn} = useSelector((state) => state.auth)
   const {firstBar} = useSelector((state) => state.app)
   const {conversationId} = useSelector((state)=> state.conversation.direct_chat)
-  const {groupId} = useSelector((state)=>state.conversation.group_chat)
-  const user_id = parseInt(window.localStorage.getItem("user_id"))
+  // const {groupId} = useSelector((state)=>state.conversation.group_chat)
+  // const user_id = parseInt(window.localStorage.getItem("user_id"))
   const isMobile = useResponsive("between", "md", "xs", "sm");
   // console.log("fuckkkkkkkkkk id ", groupId);
   useEffect(()=>{
@@ -74,12 +74,15 @@ const DashboardLayout = () => {
         const id = parseInt(data.message.id)
         const text = data.message.text
         const senderId = parseInt(data.message.senderId)
+        const Image = data.message.Image
+        const Document = data.message.Document
+        const result = ((Image && "img") || (Document && "doc")) || "msg";
         if(parseInt(conversationId) === parseInt(data.conversationId)){
           // console.log("severity: \\message: data.snack}");
           dispatch(showSnackbar({severity: "success", message: data.snack}))
           dispatch(AddDirectMessage({
             id: id,
-            type: "msg",
+            type: result,
             message: text,
             outgoing: senderId === parseInt(user_id) ,
             incoming: senderId !== parseInt(user_id)

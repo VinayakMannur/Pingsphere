@@ -17,6 +17,14 @@ const Message = sequelize.define("message", {
         type: Sequelize.BOOLEAN,
         defaultValue: false,
     },
+    Image: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
+    },
+    Document: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
+    }
 })
 
 module.exports = Message;

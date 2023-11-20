@@ -64,9 +64,12 @@ const slice = createSlice({
     },
     fetchCurrentConversation(state, action) {
       const chat_history = action.payload.chat_history.map((el) => {
+        const Image = el.Image
+        const Document = el.Document
+        const result = ((Image && "img") || (Document && "doc")) || "msg";
         return {
           id: el.id,
-          type: "msg",
+          type: result,
           message: el.text,
           outgoing: el.senderId === parseInt(user_id) ? true: false,
           incoming: el.senderId !== parseInt(user_id) ? true: false,
@@ -130,11 +133,14 @@ const slice = createSlice({
     fetchGrpChats(state, action){
       // console.log(action.payload);
       const chat_history = action.payload.map((el) => {
+        const Image = el.Image
+        const Document = el.Document
+        const result = ((Image && "img") || (Document && "doc")) || "msg";
         return {
           id: el.id,
           user_id: el.user.id,
           name: `${el.user.firstName} ${el.user.lastName}`,
-          type: "msg",
+          type: result,
           message: el.text,
           outgoing: el.senderId === parseInt(user_id) ? true: false,
           incoming: el.senderId !== parseInt(user_id) ? true: false,

@@ -2,9 +2,9 @@ import React from "react";
 import { Box, Stack } from "@mui/material";
 
 import {
-  // DocMsg,
+  DocMsg,
   // LinkMsg,
-  // MediaMsg,
+  MediaMsg,
   // ReplyMsg,
   TextMsg,
   // Timeline,
@@ -21,9 +21,28 @@ const Message = ({menu}) => {
     <Box p={2}>
       <Stack spacing={2}>
         {chat_type === "group" ?(grpConversation.length>0 && grpConversation.map((el, idx) => {
-          return <TextMsg key={idx} el={el} idx={idx} menu={menu}/>;   
+          switch (el.type) {
+            case "img":
+              return <MediaMsg key={idx} el={el} idx={idx} menu={menu}/>;
+            case "doc":
+              return <DocMsg key={idx} el={el} idx={idx} menu={menu}/>;
+            case "msg":
+              return <TextMsg key={idx} el={el} idx={idx} menu={menu}/>;       
+            default:
+              return <></>;
+          }
         })): (current_conversation && current_conversation.map((el, idx) => {
-          return <TextMsg key={idx} el={el} idx={idx} menu={menu}/>;
+          switch (el.type) {
+            case "img":
+              return <MediaMsg key={idx} el={el} idx={idx} menu={menu}/>;
+            case "doc":
+              return <DocMsg key={idx} el={el} idx={idx} menu={menu}/>;
+            case "msg":
+              return <TextMsg key={idx} el={el} idx={idx} menu={menu}/>;
+            default:
+              return <></>;
+          }
+          
         }))
         }
       </Stack>

@@ -13,7 +13,7 @@ import { LinkSimple, PaperPlaneTilt, Smiley } from "phosphor-react";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 import { Actions } from "../../data";
-import { useDispatch, useSelector } from "react-redux";
+import {  useSelector } from "react-redux";
 import { socket } from "../../socket";
 import useResponsive from "../../hooks/useResponsive";
 // import { PushToGrpConversation } from "../../redux/slices/conversation";
@@ -26,7 +26,71 @@ const StyledInput = styled(TextField)(({ theme }) => ({
 }));
 
 const ChatInput = ({ inputRef, value, setValue, setOpenPicker }) => {
+  const user_id = window.localStorage.getItem("user_id");
   const [openActions, setOpenActions] = useState(false);
+  const { conversationId, to_user } = useSelector(
+    (state) => state.conversation.direct_chat
+  );
+  const { chat_type } = useSelector((state) => state.app);
+  const { groupId } = useSelector(
+    (state) => state.conversation.group_chat
+  );
+
+  const handleFabClick = (el) => {
+    
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+
+    fileInput.onchange = (e) => {
+      const file = e.target.files[0];
+      if (file.type.startsWith('image/')) {
+        // For images, read as a data URL
+       console.log(" For images, read as a data URL");
+      } else if (file.type === 'application/pdf') {
+        // For PDFs, read as binary data
+        console.log(" For doc, read as a data URL");
+      } else {
+        console.error('Unsupported file type');
+      }
+
+      if (file) {
+   
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const fileContent = e.target.result;
+
+          const dataToSend = {
+            type: el, // You might want to include a type identifier (e.g., 'image' or 'doc')
+            content: fileContent,
+          };
+
+          const jsonData = JSON.stringify(dataToSend);
+          console.log(jsonData);
+          if (chat_type === "group") {
+            console.log("group")
+            socket.emit("sending_img_doc_grp", {
+              jsonData,
+              groupId,
+              from: parseInt(user_id),
+            });
+          } else {
+            socket.emit("sending_img_doc_ind", {
+              jsonData,
+              conversationId: conversationId,
+              from: parseInt(user_id),
+              to: to_user,
+            });
+          }
+        };
+        reader.readAsDataURL(file); 
+      }
+    };
+    document.body.appendChild(fileInput);
+    fileInput.click();
+    fileInput.remove();
+    setOpenActions(!openActions);
+  };
+
 
   return (
     <StyledInput
@@ -54,6 +118,7 @@ const ChatInput = ({ inputRef, value, setValue, setOpenPicker }) => {
                     <Fab
                       onClick={() => {
                         setOpenActions(!openActions);
+                        handleFabClick(el.title)
                       }}
                       sx={{
                         position: "absolute",
@@ -96,7 +161,7 @@ const ChatInput = ({ inputRef, value, setValue, setOpenPicker }) => {
 };
 
 const Footer = () => {
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   const theme = useTheme();
   const [openPicker, setOpenPicker] = useState(false);
   const [value, setValue] = useState("");

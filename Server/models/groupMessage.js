@@ -13,6 +13,14 @@ const GroupMessage = sequelize.define('groupmessage',{
         type: Sequelize.STRING,
         allowNull: false,
     },
+    Image: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
+    },
+    Document: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
+    }
 })
 
 module.exports = GroupMessage

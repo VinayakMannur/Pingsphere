@@ -125,7 +125,7 @@ Message.belongsTo(User, { foreignKey: 'receiverId', as: 'receiver' });
 
 //for socket
 const http = require("http");
-const { log } = require("console");
+const { uploadToS3 } = require("./services/S3Services");
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
@@ -271,7 +271,7 @@ io.on("connection", async (socket) => {
           });
         }));
 
-        console.log("this is friends deatails", details);
+        // console.log("this is friends deatails", details);
         //get all conversation of user of uder_id
         //inside participents in onetoonemessages table get all the things where participents is user_id and even the names of all participenst where the user_id is linked
         // get user firstname last name id email status
@@ -846,6 +846,140 @@ io.on("connection", async (socket) => {
         attributes: ["firstName", "lastName", "email", "phonenumber"]
       })
       callback(userDetails)
+    } catch (error) {
+      console.log(error);
+    }
+  })
+
+  socket.on("sending_img_doc_grp", async(data, callback)=>{
+    try {
+      const parsedData = JSON.parse(data.jsonData)
+    
+      const {groupId, from} = data
+      
+      const fileBuffer = Buffer.from(parsedData.content.replace(/^data:.*;base64,/, ''), 'base64');
+      // console.log(fileBuffer);
+      if(parsedData.type == "Image"){
+        const date = new Date()
+        const filename = `Img${groupId}/${date}.${parsedData.type}`;
+        const contentType = 'image/png'
+
+        const fileURL = await uploadToS3({fileBuffer, filename, contentType})
+        const imgMessage = await GroupMessage.create({
+          text: fileURL,
+          groupId: groupId,
+          senderId: from,
+          Image: true
+        })
+
+        socket.join(groupId)
+        io.to(groupId).emit("message_from_group",{
+          groupId: groupId,
+          msg: "message_from_group"
+        })
+        //store in db and sent to frontend
+      }
+      else{
+        const date = new Date()
+        const filename = `Img${groupId}/${date}.${parsedData.type}`;
+        const contentType = 'application/pdf'
+
+        const fileURL = await uploadToS3({fileBuffer, filename, contentType})
+        const docMessage = await GroupMessage.create({
+          text: fileURL,
+          groupId: groupId,
+          senderId: from,
+          Document: true
+        })
+
+        socket.join(groupId)
+        io.to(groupId).emit("message_from_group",{
+          groupId: groupId,
+          msg: "message_from_group"
+        })
+        //store in db and sent to frontend
+      }
+    } catch (error) {
+      
+    }
+    
+  })
+
+  socket.on("sending_img_doc_ind", async(data, callback)=>{
+    try {
+      const parsedData = JSON.parse(data.jsonData)
+      const {conversationId, from, to} = data
+      
+      const fileBuffer = Buffer.from(parsedData.content.replace(/^data:.*;base64,/, ''), 'base64');
+      // console.log(fileBuffer);
+      if(parsedData.type == "Image"){
+        const date = new Date()
+        const filename = `Img${conversationId}/${date}.${parsedData.type}`;
+        const contentType = 'image/png'
+
+        const fileURL = await uploadToS3({fileBuffer, filename, contentType})
+        const imgMessage = await Message.create({
+          text: fileURL,
+          conversationId,
+          senderId: from,
+          receiverId: to,
+          Image: true
+        })
+
+        const to_user = await User.findByPk(to, {
+          attributes: ["socket_id"]
+        })
+        const from_user = await User.findByPk(from, {
+          attributes: ["socket_id"]
+        })
+        // console.log("TOUSER", to_user.socket_id, "fromuser", from_user.socket_id);
+        // emit incoming message - to user
+        console.log(fileURL,imgMessage);
+        io.to(to_user.socket_id).emit("new_message",{
+          conversationId: conversationId,
+          snack: "New Message",
+          message: imgMessage,
+        })
+        io.to(from_user.socket_id).emit("new_message",{
+          conversationId: conversationId,
+          snack: "Message Sent",
+          message: imgMessage,
+        })
+        //store in db and sent to frontend
+      }
+      else{
+        const date = new Date()
+        const filename = `Img${conversationId}/${date}.${parsedData.type}`;
+        const contentType = 'application/pdf'
+
+        const fileURL = await uploadToS3({fileBuffer, filename, contentType})
+        const docMessage = await Message.create({
+          text: fileURL,
+          conversationId,
+          senderId: from,
+          receiverId: to,
+          Document: true
+        })
+
+        const to_user = await User.findByPk(to, {
+          attributes: ["socket_id"]
+        })
+        const from_user = await User.findByPk(from, {
+          attributes: ["socket_id"]
+        })
+        console.log(fileURL,docMessage);
+        io.to(to_user.socket_id).emit("new_message",{
+          conversationId: conversationId,
+          snack: "New Message",
+          message: docMessage,
+        })
+        io.to(from_user.socket_id).emit("new_message",{
+          conversationId: conversationId,
+          snack: "Message Sent",
+          message: docMessage,
+        })
+        //store in db and sent to frontend
+      }
     } catch (error) {
       console.log(error);
     }
