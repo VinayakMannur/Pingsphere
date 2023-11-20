@@ -251,33 +251,32 @@ io.on("connection", async (socket) => {
       if(all_friends && all_friends.friends){
         const receiverIds = all_friends.friends;
         // console.log(receiverIds);
-        const friendsDetails = await sequelize.query(`
-          SELECT m.*, 
-          u.id as senderId, u.firstName as senderFirstName, u.lastName as senderLastName, u.status as senderStatus,
-          r.id as receiverId, r.firstName as receiverFirstName, r.lastName as receiverLastName, r.status as receiverStatus
-          FROM \`Messages\` m
-          INNER JOIN \`Users\` u ON m.\`senderId\` = u.\`id\`
-          LEFT JOIN \`Users\` r ON m.\`receiverId\` = r.\`id\`
-          WHERE m.\`receiverId\` IN (:receiverIds)
-          AND m.\`senderId\` = :senderId
-          AND (m.\`receiverId\`, m.\`createdAt\`) IN (
-          SELECT m2.\`receiverId\`, MAX(m2.\`createdAt\`) as maxCreatedAt
-          FROM \`Messages\` m2
-          WHERE m2.\`receiverId\` IN (:receiverIds)
-          AND m2.\`senderId\` = :senderId
-          GROUP BY m2.\`receiverId\`
-          )
-        `, {
-          replacements: { receiverIds, senderId: user_id }, 
-          type: sequelize.QueryTypes.SELECT, 
-        });
-    
-        console.log("this is friends deatails", friendsDetails);
+
+        const details = await Promise.all(receiverIds.map(async (receiver) => {
+          return await Message.findOne({
+            where: {
+              receiverId: receiver,
+              senderId: user_id
+            },
+            order: [
+              ['createdAt', 'DESC']
+            ],
+            include: [
+              {
+                model: User,
+                as: 'receiver',
+                attributes: ['id', 'firstName', 'lastName', 'status']
+              }
+            ]
+          });
+        }));
+
+        console.log("this is friends deatails", details);
         //get all conversation of user of uder_id
         //inside participents in onetoonemessages table get all the things where participents is user_id and even the names of all participenst where the user_id is linked
         // get user firstname last name id email status
     
-        callback(friendsDetails)
+        callback(details)
       }
       else{
         // console.log("this is friends deatails");

@@ -30,7 +30,7 @@ const Chatss = () => {
     dispatch(SelectConversation())
     socket.emit("get_direct_conversations", { user_id }, (data) => {
       //data is list of existing conversations
-      console.log(data);
+      // console.log(data);
       dispatch(FetchDirectConversation({data}))
     });
   }, []);
