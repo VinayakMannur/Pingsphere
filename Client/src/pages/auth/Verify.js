@@ -7,7 +7,7 @@ const Verify = () => {
     <>
       <Stack spacing={3} sx={{ my: 4, position: "releative" }}>
         <Typography variant="h5">Please verify the OTP</Typography>
-        <Typography variant="body2">Sent to email vinayakmannur20@gmail.com</Typography>
+        <Typography variant="body2">An OTP has been sent your email!</Typography>
 
         {/* verifyForm */}
         <VerifyForm/>

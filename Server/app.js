@@ -42,42 +42,25 @@ const reactPath = path.join(_dirname,'../Client/build')
 
 app.use(express.static(reactPath))
 
-app.get('/',(req,res)=>{
+const serveHTML = (req, res) =>{
   res.sendFile(
-      path.join(__dirname,"../Client/build/index.html"),(err)=>{
-          if(err){
-              res.status(500).send(err)
-          }
-      }
+    path.join(__dirname,"../Client/build/index.html"),(err)=>{
+        if(err){
+            res.status(500).send(err)
+        }
+    }
   )
-})
-app.get('/app',(req,res)=>{
-  res.sendFile(
-      path.join(__dirname,"../Client/build/index.html"),(err)=>{
-          if(err){
-              res.status(500).send(err)
-          }
-      }
-  )
-})
-app.get('/group',(req,res)=>{
-  res.sendFile(
-      path.join(__dirname,"../Client/build/index.html"),(err)=>{
-          if(err){
-              res.status(500).send(err)
-          }
-      }
-  )
-})
-app.get('/auth/verify',(req,res)=>{
-  res.sendFile(
-      path.join(__dirname,"../Client/build/index.html"),(err)=>{
-          if(err){
-              res.status(500).send(err)
-          }
-      }
-  )
-})
+}
+
+app.get('/', serveHTML)
+app.get('/app',serveHTML)
+app.get('/group',serveHTML)
+app.get('/profile',serveHTML)
+app.get('/auth/login',serveHTML)
+app.get('/auth/verify',serveHTML)
+app.get('/auth/signup',serveHTML)
+app.get('/auth/newpassword',serveHTML)
+app.get('/auth/resetpassword',serveHTML)
 
 //assoications
 User.hasMany(ResetPassword);

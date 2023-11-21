@@ -317,6 +317,22 @@ const Contact = () => {
     setOpenNotAdminMembers(false);
   };
 
+  useEffect(() => {
+    const handleBackButtonPress = (event) => {
+      if (isMobile) {
+        event.preventDefault(); // Prevents the default back button behavior
+        UpdateContactNull(); // Dispatch the actions
+      }
+    };
+
+    window.addEventListener('popstate', handleBackButtonPress);
+
+    // Clean up the event listener on component unmount
+    return () => {
+      window.removeEventListener('popstate', handleBackButtonPress);
+    };
+  }, [isMobile]);
+
   return (
     <Box sx={{ width: isMobile ? "100%":  320, height: "100vh" }}>
       <Stack width={"100%"} height={"100%"}>

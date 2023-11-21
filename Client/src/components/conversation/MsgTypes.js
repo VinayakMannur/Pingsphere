@@ -13,6 +13,7 @@ import { useTheme } from "@mui/material/styles";
 import { DotsThreeVertical, DownloadSimple, Image } from "phosphor-react";
 import { Message_options } from "../../data";
 import { useSelector } from "react-redux";
+import useResponsive from "../../hooks/useResponsive";
 
 const DocMsg = ({ el, menu, idx }) => {
   const theme = useTheme();
@@ -219,6 +220,8 @@ const MediaMsg = ({ el, menu, idx }) => {
   const theme = useTheme();
   const { chat_type } = useSelector((state) => state.app);
   const user_id = window.localStorage.getItem("user_id");
+  const isMobile = useResponsive("between", "md", "xs", "sm");
+  
   return (
     <Stack
       key={idx}
@@ -251,8 +254,8 @@ const MediaMsg = ({ el, menu, idx }) => {
           )}
           <img
             src={el.message}
-            alt={el.message}
-            style={{ maxHeight: 210, borderRadius: "10px" }}
+            alt={"image"}
+            style={{ maxHeight: isMobile?110: 210, maxWidth: isMobile?110:  210, borderRadius: "10px" }}
           />
         </Box>
       ) : (
@@ -268,8 +271,8 @@ const MediaMsg = ({ el, menu, idx }) => {
         >
           <img
             src={el.message}
-            alt={el.message}
-            style={{ maxHeight: 210, borderRadius: "10px" }}
+            alt={"image"}
+            style={{ maxHeight: isMobile? 110: 210, maxWidth: isMobile? 110: 210, borderRadius: "10px" }}
           />
         </Box>
       )}
