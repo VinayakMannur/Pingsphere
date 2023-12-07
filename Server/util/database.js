@@ -6,7 +6,7 @@ const sequelize = new Sequelize(
   process.env.DATABASE_PASSWORD,
   {
     dialect: "mysql",
-    host: process.env.DATABASE_HOST,
+    host: 57708,
   }
 );
 
