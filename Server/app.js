@@ -37,30 +37,30 @@ app.use(helmet({
   })
 );
 
-const _dirname = path.dirname("ChatAppdemo")
-const reactPath = path.join(_dirname,'../Client/build')
+// const _dirname = path.dirname("ChatAppdemo")
+// const reactPath = path.join(_dirname,'../Client/build')
 
-app.use(express.static(reactPath))
+// app.use(express.static(reactPath))
 
-const serveHTML = (req, res) =>{
-  res.sendFile(
-    path.join(__dirname,"../Client/build/index.html"),(err)=>{
-        if(err){
-            res.status(500).send(err)
-        }
-    }
-  )
-}
+// const serveHTML = (req, res) =>{
+//   res.sendFile(
+//     path.join(__dirname,"../Client/build/index.html"),(err)=>{
+//         if(err){
+//             res.status(500).send(err)
+//         }
+//     }
+//   )
+// }
 
-app.get('/', serveHTML)
-app.get('/app',serveHTML)
-app.get('/group',serveHTML)
-app.get('/profile',serveHTML)
-app.get('/auth/login',serveHTML)
-app.get('/auth/verify',serveHTML)
-app.get('/auth/signup',serveHTML)
-app.get('/auth/newpassword',serveHTML)
-app.get('/auth/resetpassword',serveHTML)
+// app.get('/', serveHTML)
+// app.get('/app',serveHTML)
+// app.get('/group',serveHTML)
+// app.get('/profile',serveHTML)
+// app.get('/auth/login',serveHTML)
+// app.get('/auth/verify',serveHTML)
+// app.get('/auth/signup',serveHTML)
+// app.get('/auth/newpassword',serveHTML)
+// app.get('/auth/resetpassword',serveHTML)
 
 //assoications
 User.hasMany(ResetPassword);
@@ -112,7 +112,7 @@ const { uploadToS3 } = require("./services/S3Services");
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "*",
+    origin: "http://localost:3000",
     // origin: "https://pingsphere.netlify.app",
   },
 });

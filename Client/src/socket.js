@@ -3,7 +3,7 @@ import io from 'socket.io-client'
 let socket
 
 const connectSocket = (user_id)=>{
-    socket = io("http://3.84.228.149",{
+    socket = io("https://pingsphere-production.up.railway.app",{
         query: `user_id=${user_id}`
     })
 }
