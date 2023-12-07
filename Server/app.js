@@ -112,7 +112,7 @@ const { uploadToS3 } = require("./services/S3Services");
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "http://localost:3000",
+    origin: "https://pingsphere.netlify.app",
     // origin: "https://pingsphere.netlify.app",
   },
 });
