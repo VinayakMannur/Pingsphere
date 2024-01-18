@@ -6,7 +6,6 @@ import Message from "./Message";
 import { FetchDirectConversation } from "../../redux/slices/conversation";
 import { socket } from "../../socket";
 import { useDispatch, useSelector } from "react-redux";
-import useResponsive from "../../hooks/useResponsive";
 
 const Conversation = () => {
   const dispatch = useDispatch()
@@ -16,7 +15,6 @@ const Conversation = () => {
   const {current_conversation} = useSelector((state)=> state.conversation.direct_chat)
   const {grpConversation} = useSelector((state)=> state.conversation.group_chat)
   const {chat_type} = useSelector((state)=>state.app)
-  // const isMobile = useResponsive("between", "md", "xs", "sm");
 
   const scrollToBottom = () => {
     if (scrollContainerRef.current) {
@@ -68,7 +66,7 @@ const Conversation = () => {
         }}
         width={"100%"}
       >
-        <Message menu={true}/>
+        <Message/>
       </Box>
       
       {/* footer  */}

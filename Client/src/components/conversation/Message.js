@@ -3,15 +3,12 @@ import { Box, Stack } from "@mui/material";
 
 import {
   DocMsg,
-  // LinkMsg,
   MediaMsg,
-  // ReplyMsg,
   TextMsg,
-  // Timeline,
 } from "./MsgTypes";
 import { useSelector } from "react-redux";
 
-const Message = ({menu}) => {
+const Message = () => {
 
   const {current_conversation} = useSelector((state)=> state.conversation.direct_chat)
   const {grpConversation} = useSelector((state)=> state.conversation.group_chat)
@@ -23,22 +20,22 @@ const Message = ({menu}) => {
         {chat_type === "group" ?(grpConversation.length>0 && grpConversation.map((el, idx) => {
           switch (el.type) {
             case "img":
-              return <MediaMsg key={idx} el={el} idx={idx} menu={menu}/>;
+              return <MediaMsg key={idx} el={el} idx={idx}/>;
             case "doc":
-              return <DocMsg key={idx} el={el} idx={idx} menu={menu}/>;
+              return <DocMsg key={idx} el={el} idx={idx}/>;
             case "msg":
-              return <TextMsg key={idx} el={el} idx={idx} menu={menu}/>;       
+              return <TextMsg key={idx} el={el} idx={idx}/>;       
             default:
               return <></>;
           }
         })): (current_conversation && current_conversation.map((el, idx) => {
           switch (el.type) {
             case "img":
-              return <MediaMsg key={idx} el={el} idx={idx} menu={menu}/>;
+              return <MediaMsg key={idx} el={el} idx={idx}/>;
             case "doc":
-              return <DocMsg key={idx} el={el} idx={idx} menu={menu}/>;
+              return <DocMsg key={idx} el={el} idx={idx}/>;
             case "msg":
-              return <TextMsg key={idx} el={el} idx={idx} menu={menu}/>;
+              return <TextMsg key={idx} el={el} idx={idx}/>;
             default:
               return <></>;
           }

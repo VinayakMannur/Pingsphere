@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Box, IconButton, Stack, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import { CircleDashed, MagnifyingGlass, Users } from "phosphor-react";
-import { ChatList } from "../data";
+import {  Users } from "phosphor-react";
 import { SimpleBarStyle } from "./Scrollbar";
-import { Search, SearchIconWrapper, StyledInputBase } from "./search";
 import ChatElement from "./ChatElement";
 import useResponsive from "../hooks/useResponsive";
 import Friends from "./Friends";
@@ -73,21 +71,6 @@ const Chatss = () => {
               </IconButton>
             </Stack>
           </Stack>
-          <Stack sx={{ width: "100%" }}>
-            <Search>
-              <SearchIconWrapper>
-                <MagnifyingGlass color="#709CE6" />
-              </SearchIconWrapper>
-              <StyledInputBase placeholder="Search..." />
-            </Search>
-          </Stack>
-          {/* <Stack spacing={1}>
-                    <Stack direction={'row'} alignItems={'center'} spacing={2}>
-                        <ArchiveBox size={20} />
-                        <Button>Archive</Button>
-                    </Stack>
-                    <Divider />
-                </Stack> */}
           <Stack
             direction={"column"}
             spacing={1.2}
@@ -111,14 +94,6 @@ const Chatss = () => {
             }}
           >
             <SimpleBarStyle timeout={500} clickOnTrack={false}>
-              {/* <Stack spacing={1}>
-                <Typography variant="subtitle2" sx={{ color: "#767676" }}>
-                  Pinned
-                </Typography>
-                {ChatList.filter((el) => el.pinned).map((el) => {
-                  return <ChatElement {...el} />;
-                })}
-              </Stack> */}
               <Stack spacing={1}>
               <Typography variant="subtitle2" sx={{ color: "#767676" }}>
                 All Chats

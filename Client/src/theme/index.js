@@ -13,8 +13,6 @@ import useSettings from "../hooks/useSettings.js";
 import palette from "./palette";
 import typography from "./typography";
 import breakpoints from "./breakpoints";
-import componentsOverride from "./overrides";
-import shadows, { customShadows } from "./shadows";
 
 // ----------------------------------------------------------------------
 
@@ -23,7 +21,7 @@ ThemeProvider.propTypes = {
 };
 
 export default function ThemeProvider({ children }) {
-  const { themeMode, themeDirection } = useSettings();
+  const { themeMode } = useSettings();
 
   const isLight = themeMode === "light";
 
@@ -33,16 +31,11 @@ export default function ThemeProvider({ children }) {
       typography,
       breakpoints,
       shape: { borderRadius: 8 },
-      direction: themeDirection,
-      shadows: isLight ? shadows.light : shadows.dark,
-      customShadows: isLight ? customShadows.light : customShadows.dark,
     }),
-    [isLight, themeDirection]
+    [isLight]
   );
 
   const theme = createTheme(themeOptions);
-
-  theme.components = componentsOverride(theme);
 
   return (
     <StyledEngineProvider injectFirst>

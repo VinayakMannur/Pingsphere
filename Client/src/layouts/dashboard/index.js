@@ -18,7 +18,7 @@ const DashboardLayout = () => {
   // const {groupId} = useSelector((state)=>state.conversation.group_chat)
   // const user_id = parseInt(window.localStorage.getItem("user_id"))
   const isMobile = useResponsive("between", "md", "xs", "sm");
-  // console.log("fuckkkkkkkkkk id ", groupId);
+  
   useEffect(()=>{
 
     if(isLoggedIn){

@@ -3,8 +3,6 @@ import React from "react";
 import Router from "./routes";
 // theme
 import ThemeProvider from "./theme";
-// components
-// import ThemeSettings from './components/settings';
 
 import { Snackbar } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
@@ -28,9 +26,7 @@ function App() {
   return (
     <>
       <ThemeProvider>
-        {/* <ThemeSettings> */}
         <Router />
-        {/* </ThemeSettings> */}
       </ThemeProvider>
 
       {message && open ? (

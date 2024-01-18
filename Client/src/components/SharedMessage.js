@@ -13,8 +13,8 @@ import {
 import { CaretLeft } from "phosphor-react";
 import { useTheme } from "@mui/material/styles";
 import { faker } from "@faker-js/faker";
-import { Shared_Docs, Shared_Links } from "../data";
-import { DocMsg, LinkMsg } from "./conversation/MsgTypes";
+import { Shared_Docs } from "../data";
+import { DocMsg } from "./conversation/MsgTypes";
 
 const SharedMessage = () => {
   const dispatch = useDispatch();
@@ -105,8 +105,8 @@ const SharedMessage = () => {
                     })}
                   </Grid>
                 );
-              case 1:
-                return Shared_Links.map((el) => <LinkMsg el={el}/>)
+              // case 1:
+              //   return Shared_Links.map((el) => <LinkMsg el={el}/>)
               case 2:
                 //Docs
                 return Shared_Docs.map((el) => <DocMsg el={el}/>)

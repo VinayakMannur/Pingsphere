@@ -1,6 +1,7 @@
 import axios from "axios";
 
-import { BASE_URL } from "../config";
+export const BASE_URL = "https://pingsphere-production.up.railway.app/"
+// const BASE_URL = "http://localhost:5000"
 
 const axiosInstance = axios.create({ baseURL: BASE_URL });
 

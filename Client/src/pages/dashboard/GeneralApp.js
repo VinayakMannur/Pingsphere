@@ -5,8 +5,8 @@ import Conversation from "../../components/conversation";
 import { useTheme } from "@mui/material/styles";
 import Contact from "../../components/Contact";
 import { useSelector } from "react-redux";
-import SharedMessage from "../../components/SharedMessage";
-import StarredMessage from "../../components/StarredMessages";
+// import SharedMessage from "../../components/SharedMessage";
+// import StarredMessage from "../../components/StarredMessages";
 import useResponsive from "../../hooks/useResponsive";
 import NoChatSVG from "../../assets/Illustration/NoChat";
 
@@ -100,10 +100,10 @@ const GeneralApp = () => {
             switch (sidebar.type) {
               case "CONTACT":
                 return <Contact />;
-              case "STARRED":
-                return <StarredMessage />;
-              case "SHARED":
-                return <SharedMessage />;
+              // case "STARRED":
+              //   return <StarredMessage />;
+              // case "SHARED":
+              //   return <SharedMessage />;
               default:
                 break;
             }

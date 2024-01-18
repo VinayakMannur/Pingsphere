@@ -5,8 +5,6 @@ import { Navigate, useRoutes } from "react-router-dom";
 import DashboardLayout from "../layouts/dashboard";
 import MainLayout from "../layouts/main";
 
-// config
-import { DEFAULT_PATH } from "../config";
 import LoadingScreen from "../components/LoadingScreen";
 
 const Loadable = (Component) => (props) => {
@@ -34,7 +32,7 @@ export default function Router() {
       path: "/",
       element: <DashboardLayout />,
       children: [
-        { element: <Navigate to={DEFAULT_PATH} replace />, index: true },
+        { element: <Navigate to={'/app'} replace />, index: true },
         { path: "app", element: <GeneralApp /> },
         { path: "group", element: <GroupPage /> },
         { path: "profile", element: <ProfilePage /> },

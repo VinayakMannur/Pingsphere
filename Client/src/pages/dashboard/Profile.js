@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import {
   Box,
   IconButton,
@@ -6,28 +6,24 @@ import {
   Stack,
   Typography,
   Input,
-  Button,
 } from "@mui/material";
 import { faker } from "@faker-js/faker";
 import { useTheme } from "@mui/material/styles";
 import { Camera, CaretLeft } from "phosphor-react";
-import ProfileForm from "../../components/forms/ProfileForm";
 import useResponsive from "../../hooks/useResponsive";
 import { useDispatch, useSelector } from "react-redux";
 import {
   UpdateOneToOneChats,
-  UpdateProfile,
   UpdateSelfInfo,
 } from "../../redux/slices/app";
 import { socket } from "../../socket";
-import axios from "axios";
 
 const Profile = () => {
   const dispatch = useDispatch();
   const theme = useTheme();
   const isMobile = useResponsive("between", "md", "xs", "sm");
   const user_id = parseInt(window.localStorage.getItem("user_id"));
-  const [selectedFile, setSelectedFile] = useState(null);
+  // const [selectedFile, setSelectedFile] = useState(null);
 
   useEffect(() => {
     socket.emit("get_self_info", { user_id }, (data) => {

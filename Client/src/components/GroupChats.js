@@ -6,7 +6,6 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
   Divider,
   IconButton,
@@ -17,14 +16,11 @@ import {
   Typography,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import { MagnifyingGlass, Plus } from "phosphor-react";
-import { ChatList } from "../data";
+import {  Plus } from "phosphor-react";
 import { SimpleBarStyle } from "./Scrollbar";
-import { Search, SearchIconWrapper, StyledInputBase } from "./search";
 import ChatElement from "./ChatElement";
 import useResponsive from "../hooks/useResponsive";
 import { useDispatch, useSelector } from "react-redux";
-import { CreateGroup } from "../redux/slices/conversation";
 import { socket } from "../socket";
 import { getFriends } from "../redux/slices/app";
 
@@ -133,14 +129,6 @@ const GroupChats = () => {
           justifyContent={"space-between"}
         >
           <Typography variant="h5">Group Chats</Typography>
-        </Stack>
-        <Stack sx={{ width: "100%" }}>
-          <Search>
-            <SearchIconWrapper>
-              <MagnifyingGlass color="#709CE6" />
-            </SearchIconWrapper>
-            <StyledInputBase placeholder="Search..." />
-          </Search>
         </Stack>
         <Stack spacing={1}>
           <Stack

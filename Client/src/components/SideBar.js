@@ -13,7 +13,7 @@ import { faker } from "@faker-js/faker";
 import useSettings from "../hooks/useSettings";
 import Logo from "../assets/Images/logo.png";
 import { Profile_Menu } from "../data/index";
-import { ChatCircleDots, Gear, Users } from "phosphor-react";
+import { ChatCircleDots, Users } from "phosphor-react";
 import MaterialUISwitch from "./MaterialUISwitch";
 import { useNavigate } from "react-router-dom";
 import useResponsive from "../hooks/useResponsive";

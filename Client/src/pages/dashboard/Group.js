@@ -9,8 +9,8 @@ import { UpdateGroupList } from "../../redux/slices/conversation";
 import Conversation from "../../components/conversation";
 import NoChatSVG from "../../assets/Illustration/NoChat";
 import useResponsive from "../../hooks/useResponsive";
-import StarredMessage from "../../components/StarredMessages";
-import SharedMessage from "../../components/SharedMessage";
+// import StarredMessage from "../../components/StarredMessages";
+// import SharedMessage from "../../components/SharedMessage";
 import Contact from "../../components/Contact";
 
 const Group = () => {
@@ -113,10 +113,10 @@ const Group = () => {
           switch (sidebar.type) {
             case "CONTACT":
               return <Contact />;
-            case "STARRED":
-              return <StarredMessage />;
-            case "SHARED":
-              return <SharedMessage />;
+            // case "STARRED":
+            //   return <StarredMessage />;
+            // case "SHARED":
+            //   return <SharedMessage />;
             default:
               break;
           }
