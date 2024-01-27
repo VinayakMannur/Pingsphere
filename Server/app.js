@@ -113,7 +113,7 @@ const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     origin: "https://pingsphere.netlify.app",
-    // origin: "https://pingsphere.netlify.app",
+    // origin: "https://localhost:3000"
   },
 });
 

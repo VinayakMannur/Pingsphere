@@ -16,11 +16,21 @@ const LoginForm = () => {
   const dispatch = useDispatch();
 
   const [showPassword, setShowPassword] = useState(false);
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
+  
   function handleSubmit(e) {
+    e.preventDefault();
+    try {
+      dispatch(LoginUser({ email, password }));
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  function handleSubmitDemo(e) {
+    const email = "demo@gmail.com"
+    const password = "123"
     e.preventDefault();
     try {
       dispatch(LoginUser({ email, password }));
@@ -83,6 +93,11 @@ const LoginForm = () => {
         </Stack>
         <Button fullWidth type="submit" variant="contained">
           Login
+        </Button>
+      </form>
+      <form onSubmit={handleSubmitDemo}>
+        <Button  type="submit" variant="contained">
+          Login for demo of application
         </Button>
       </form>
     </>
