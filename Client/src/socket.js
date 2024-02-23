@@ -4,7 +4,7 @@ let socket
 
 const connectSocket = (user_id)=>{
     // socket = io("http://localhost:5000",{
-    socket = io("https://pingsphere-production.up.railway.app",{
+    socket = io("https://pingsphere.onrender.com",{
         query: `user_id=${user_id}`
     })
 }
